@@ -9,7 +9,6 @@
 ## 講義結構
 
 ```
-docs/
 ├── 01-環境建置/       # 主題 + 4 個範例
 ├── 02-Vite入門/       # 主題 + 3 個範例
 ├── 03-TypeScript配置/  # 主題 + 3 個範例
@@ -28,17 +27,17 @@ docs/
 
 | 章節 | 主題 | 範例數 |
 |------|------|--------|
-| [01 - 環境建置](docs/01-環境建置/主題.md) | Node、npm、專案結構 | 4 |
-| [02 - Vite 入門](docs/02-Vite入門/主題.md) | Vite 是什麼、vite.config、dev/build | 3 |
-| [03 - TypeScript 配置](docs/03-TypeScript配置/主題.md) | tsconfig、型別基礎 | 3 |
-| [04 - npm 入門](docs/04-npm入門/主題.md) | package.json、套件安裝 | 3 |
-| [05 - React 核心概念](docs/05-React核心概念/主題.md) | JSX、Props、State、Hooks、事件 | 5 |
+| [01 - 環境建置](01-環境建置/主題.md) | Node、npm、專案結構 | 4 |
+| [02 - Vite 入門](02-Vite入門/主題.md) | Vite 是什麼、vite.config、dev/build | 3 |
+| [03 - TypeScript 配置](03-TypeScript配置/主題.md) | tsconfig、型別基礎 | 3 |
+| [04 - npm 入門](04-npm入門/主題.md) | package.json、套件安裝 | 3 |
+| [05 - React 核心概念](05-React核心概念/主題.md) | JSX、Props、State、Hooks、事件 | 5 |
 
 ---
 
 ## 使用方式
 
-1. 從 [01 - 環境建置](docs/01-環境建置/主題.md) 開始
+1. 從 [01 - 環境建置](01-環境建置/主題.md) 開始
 2. 閱讀主題說明後，依序完成各範例
 3. 每個範例都是 **Markdown 檔案**，內含步驟與程式碼，可一步一步跟著操作
 
