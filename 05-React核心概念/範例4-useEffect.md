@@ -6,6 +6,13 @@
 
 ---
 
+## 動手操作
+
+1. 啟動範例專案後，點選 **「4. useEffect」**
+2. 觀察秒數是否每秒自動增加（useEffect 啟動的計時器）
+
+---
+
 ## 步驟 1：引入 useState 與 useEffect
 
 ```tsx
