@@ -4,6 +4,16 @@
 
 **學習方式**：依序完成 [範例 0](../範例0-建立專案.md)～[範例 5](../範例5-Action表單處理.md)。
 
+## 專案結構對應
+
+| 路徑 | 說明 |
+|------|------|
+| `app/routes/home.tsx` | 首頁，整合 [05-React核心概念](../../05-React核心概念/主題.md) 的互動範例（JSX、Props、State、useEffect、事件處理） |
+| `app/examples/` | React 核心概念範例元件（與 05 章節一致） |
+| `app/routes/about.tsx` | 關於頁（範例 3） |
+| `app/routes/products.tsx` | 商品頁，Loader 資料載入（範例 4） |
+| `app/routes/contact.tsx` | 聯絡頁，Action 表單處理（範例 5） |
+
 ---
 
 # Welcome to React Router!

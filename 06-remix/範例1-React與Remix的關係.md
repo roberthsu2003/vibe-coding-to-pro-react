@@ -84,6 +84,12 @@ React Router v7 與 Next.js 都是 React 全端框架，差異如下：
 
 ---
 
+## 步驟 6：與 05 章節的銜接
+
+本單元（06 - Remix）的 `examples` 專案已整合 [05 - React 核心概念](../05-React核心概念/主題.md) 的範例元件。首頁（`/`）可切換 JSX、Props、State、useEffect、事件處理等互動範例，讓你在學習 Remix 的同時，延續並複習 React 核心概念。
+
+---
+
 ## 完成
 
 理解關係後，繼續 [範例 2：認識專案結構](範例2-認識專案結構.md)。

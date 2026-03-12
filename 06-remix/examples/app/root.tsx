@@ -1,5 +1,6 @@
 import {
   isRouteErrorResponse,
+  Link,
   Links,
   Meta,
   Outlet,
@@ -45,10 +46,10 @@ export default function App() {
   return (
     <>
       <nav className="flex gap-4 p-4 border-b">
-        <a href="/" className="text-blue-600 hover:underline">首頁</a>
-        <a href="/about" className="text-blue-600 hover:underline">關於</a>
-        <a href="/products" className="text-blue-600 hover:underline">商品</a>
-        <a href="/contact" className="text-blue-600 hover:underline">聯絡</a>
+        <Link to="/" className="text-blue-600 hover:underline">首頁</Link>
+        <Link to="/about" className="text-blue-600 hover:underline">關於</Link>
+        <Link to="/products" className="text-blue-600 hover:underline">商品</Link>
+        <Link to="/contact" className="text-blue-600 hover:underline">聯絡</Link>
       </nav>
       <Outlet />
     </>
