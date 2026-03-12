@@ -57,22 +57,38 @@ export default function Products({ loaderData }: Route.ComponentProps) {
 
 ## 步驟 3：註冊路由
 
-在 `app/routes.ts` 加入：
+修改 `app/routes.ts`，加入 `route` 的 import，並在陣列中新增 products 路由：
 
 ```ts
-route("products", "routes/products.tsx"),
+import { type RouteConfig, index, route } from "@react-router/dev/routes";
+
+export default [
+  index("routes/home.tsx"),
+  route("about", "routes/about.tsx"),
+  route("products", "routes/products.tsx"),
+] satisfies RouteConfig;
 ```
 
 ---
 
-## 步驟 4：型別說明
+## 步驟 4：在 root.tsx 導覽列加入商品連結
+
+在 `app/root.tsx` 的 `<nav>` 中新增：
+
+```tsx
+<Link to="/products" className="text-blue-600 hover:underline">商品</Link>
+```
+
+---
+
+## 步驟 5：型別說明
 
 - `Route.ComponentProps`：自動推斷 `loaderData` 型別
 - `./+types/products`：由 React Router 自動產生的型別
 
 ---
 
-## 步驟 5：驗證
+## 步驟 6：驗證
 
 1. 儲存檔案
 2. 開啟 `http://localhost:5173/products`

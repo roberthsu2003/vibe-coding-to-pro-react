@@ -2,17 +2,17 @@
 
 本專案為 [06-remix](../主題.md) 章節的範例，使用 **React Router v7**（整合 Remix）建立。
 
-**學習方式**：依序完成 [範例 0](../範例0-建立專案.md)～[範例 5](../範例5-Action表單處理.md)。
+## 學習方式
 
-## 專案結構對應
+本 `examples` 資料夾為**最原始的基本 template**。請依序完成 [範例 0](../範例0-建立專案.md)～[範例 5](../範例5-Action表單處理.md)，依照教學**逐步修改**此專案：
 
-| 路徑 | 說明 |
-|------|------|
-| `app/routes/home.tsx` | 首頁，整合 [05-React核心概念](../../05-React核心概念/主題.md) 的互動範例（JSX、Props、State、useEffect、事件處理） |
-| `app/examples/` | React 核心概念範例元件（與 05 章節一致） |
-| `app/routes/about.tsx` | 關於頁（範例 3） |
-| `app/routes/products.tsx` | 商品頁，Loader 資料載入（範例 4） |
-| `app/routes/contact.tsx` | 聯絡頁，Action 表單處理（範例 5） |
+| 範例 | 修改內容 |
+|------|----------|
+| 範例 0 | 建立專案（或使用本資料夾作為起點） |
+| 範例 2 | 認識專案結構 |
+| 範例 3 | 新增 About 頁面、修改 routes.ts、root.tsx |
+| 範例 4 | 新增 Products 頁面（Loader）、修改 routes.ts、root.tsx |
+| 範例 5 | 新增 Contact 頁面（Action）、修改 routes.ts、root.tsx |
 
 ---
 

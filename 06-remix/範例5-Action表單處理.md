@@ -80,15 +80,32 @@ export default function Contact({ actionData }: Route.ComponentProps) {
 
 ## 步驟 3：註冊路由
 
-在 `app/routes.ts` 加入：
+修改 `app/routes.ts`，在陣列中新增 contact 路由：
 
 ```ts
-route("contact", "routes/contact.tsx"),
+import { type RouteConfig, index, route } from "@react-router/dev/routes";
+
+export default [
+  index("routes/home.tsx"),
+  route("about", "routes/about.tsx"),
+  route("products", "routes/products.tsx"),
+  route("contact", "routes/contact.tsx"),
+] satisfies RouteConfig;
 ```
 
 ---
 
-## 步驟 4：重點整理
+## 步驟 4：在 root.tsx 導覽列加入聯絡連結
+
+在 `app/root.tsx` 的 `<nav>` 中新增：
+
+```tsx
+<Link to="/contact" className="text-blue-600 hover:underline">聯絡</Link>
+```
+
+---
+
+## 步驟 5：重點整理
 
 | 項目 | 說明 |
 |------|------|
@@ -98,7 +115,7 @@ route("contact", "routes/contact.tsx"),
 
 ---
 
-## 步驟 5：驗證
+## 步驟 6：驗證
 
 1. 儲存檔案
 2. 開啟 `http://localhost:5173/contact`
