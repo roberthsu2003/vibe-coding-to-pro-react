@@ -87,7 +87,17 @@ export default function Contact() {
 
 ---
 
-## 步驟 4：驗證
+## 步驟 4：在 layout 導覽列加入聯絡連結
+
+在 `src/app/layout.tsx` 的 `<nav>` 中新增：
+
+```tsx
+<Link href="/contact" className="text-blue-600 hover:underline">聯絡</Link>
+```
+
+---
+
+## 步驟 5：驗證
 
 1. 儲存檔案
 2. 開啟 `http://localhost:3000/contact`
