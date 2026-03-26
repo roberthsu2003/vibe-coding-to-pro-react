@@ -11,11 +11,12 @@
 ```
 ├── 01-環境建置/       # 主題 + 4 個範例
 ├── 02-Vite入門/       # 主題 + 3 個範例
-├── 03-TypeScript配置/  # 主題 + 3 個範例
+├── 03-TypeScript配置/  # 主題 + 3 個範例（專案設定）
 ├── 04-npm入門/        # 主題 + 4 個範例
 ├── 05-React核心概念/  # 主題 + 6 個範例（含建立專案）
 ├── 06-remix/          # 主題 + 6 個範例（React Router v7）
-└── 07-Next.js/        # 主題 + 6 個範例（Next.js）
+├── 07-Next.js/        # 主題 + 6 個範例（Next.js）
+└── 08-TypeScript語法/ # 主題 + 6 個範例（語法與型別系統）
 ```
 
 每章包含：
@@ -36,6 +37,9 @@
 | [05 - React 核心概念](05-React核心概念/主題.md) | JSX、Props、State、Hooks、事件 | 6 |
 | [06 - Remix](06-remix/主題.md) | React Router v7、Remix、路由、Loader、Action | 6 |
 | [07 - Next.js](07-Next.js/主題.md) | App Router、Server Component、Server Action | 6 |
+| [08 - TypeScript 語法](08-TypeScript語法/主題.md) | 變數、函式、interface、泛型、聯合型別 | 6 |
+
+> **學習順序**：`08` 放在表末是為了與現有 01～07 銜接；若你希望先打好型別基礎，可在讀完 [03 - TypeScript 配置](03-TypeScript配置/主題.md) 後接著讀 `08`，再進入 npm 與 React。
 
 ---
 
