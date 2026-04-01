@@ -40,7 +40,7 @@
 
 3. 用瀏覽器開啟終端機顯示的本機網址，確認專案能啟動。
 
-接下來**步驟 1～6**的程式碼：若走 **步驟 0a**，請寫在 **`tsx-cli/src/03-interfaces.ts`**；若走 **步驟 0b**，請寫在 **`examples/03-interfaces/src/practice-03-interfaces.ts`**。空白片段可參考 [practice-03-interfaces-範本.ts](practice-03-interfaces-範本.ts)。
+接下來**步驟 1～6**的程式碼：若走 **步驟 0a**，請寫在 **`tsx-cli/src/03-interfaces.ts`**；若走 **步驟 0b**，請寫在 **`examples/03-interfaces/src/practice-03-interfaces.ts`**（內含 TODO 鷹架）。
 
 ---
 
