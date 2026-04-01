@@ -12,7 +12,16 @@
 
 ---
 
-## 步驟 0：開啟本範例專案並確認可執行
+## 步驟 0a：指令列練習（建議先做）
+
+1. 編輯 [`tsx-cli/src/03-interfaces.ts`](tsx-cli/src/03-interfaces.ts)，依下方**步驟 1～6** 在此檔撰寫程式。
+2. 在 [`tsx-cli/`](tsx-cli/) 目錄執行：`npm run 03`（見 [tsx-cli README](tsx-cli/README.md)）。
+
+完成後，再進行 **步驟 0b**（可將程式複製到 `src/practice-03-interfaces.ts`）。
+
+---
+
+## 步驟 0b：開啟本範例網頁專案並確認可執行
 
 本範例使用**獨立資料夾** [`examples/03-interfaces/`](examples/03-interfaces/)（可整份複製）。內含 **`index.html`**、**`src/main.ts`**、**`src/style.css`**、練習檔 **`src/practice-03-interfaces.ts`**；`console.log` 會同步顯示在網頁上。
 
@@ -31,7 +40,7 @@
 
 3. 用瀏覽器開啟終端機顯示的本機網址，確認專案能啟動。
 
-接下來**步驟 1～6**的程式碼，請都寫在 **`src/practice-03-interfaces.ts`**。空白片段可參考 [practice-03-interfaces-範本.ts](practice-03-interfaces-範本.ts)。
+接下來**步驟 1～6**的程式碼：若走 **步驟 0a**，請寫在 **`tsx-cli/src/03-interfaces.ts`**；若走 **步驟 0b**，請寫在 **`examples/03-interfaces/src/practice-03-interfaces.ts`**。空白片段可參考 [practice-03-interfaces-範本.ts](practice-03-interfaces-範本.ts)。
 
 ---
 
@@ -138,7 +147,7 @@ type Admin = User & { role: 'admin' }
 
 ## 步驟 6：綜合練習（在練習檔中）
 
-在 **`src/practice-03-interfaces.ts`** 末尾加入（或覆寫前面實驗碼）：
+在**練習檔**（`tsx-cli/src/03-interfaces.ts` 或 `examples/…/src/practice-03-interfaces.ts`）末尾加入（或覆寫前面實驗碼）：
 
 ```typescript
 interface Todo {
@@ -178,7 +187,7 @@ console.log(summarize(list));
 
 ## 小練習
 
-在 **`src/practice-03-interfaces.ts`** 中完成：
+在 **tsx-cli** 或 **網頁專案** 的練習檔中完成：
 
 1. 定義 `interface Book`，包含 `title: string`、`author: string`、選用欄位 `year?: number`，並建立一個符合的常數。  
 2. 定義 `type Point3D`，在 `Point`（`x`, `y`）之上加上 `z: number`（可用 `type Point = { x: number; y: number }` 再交集）。  

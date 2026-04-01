@@ -1,6 +1,8 @@
 # TypeScript 語法練習專案（依範例分資料夾）
 
-本目錄為 [08 - TypeScript 語法](../主題.md) 的**實作練習**。**每個範例一個獨立資料夾**，內含可執行的 **Vite + TypeScript** 專案：`index.html`、`src/main.ts`、`src/style.css`，以及該範例專用的練習檔 **`src/practice-….ts`**。
+本目錄為 [08 - TypeScript 語法](../主題.md) 的**第二階段**實作：**瀏覽器 + Vite**。**建議**先完成 [範例 0](../範例0-建立練習專案.md) 的**階段一** [`../tsx-cli/`](../tsx-cli/)（指令列 + tsx），再使用本目錄。
+
+**每個範例一個獨立資料夾**，內含 **Vite + TypeScript** 專案：`index.html`、`src/main.ts`、`src/style.css`，以及該範例專用的練習檔 **`src/practice-….ts`**。
 
 將整個資料夾複製到任意路徑後，於該資料夾執行 `npm install` 與 `npm run dev` 即可。
 

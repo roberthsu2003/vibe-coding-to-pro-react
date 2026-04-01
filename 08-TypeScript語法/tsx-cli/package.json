@@ -1,0 +1,22 @@
+{
+  "name": "ts-syntax-tsx-cli",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "01": "tsx src/01-basics.ts",
+    "02": "tsx src/02-functions.ts",
+    "03": "tsx src/03-interfaces.ts",
+    "04": "tsx src/04-arrays-generics.ts",
+    "05": "tsx src/05-unions.ts",
+    "watch:01": "tsx watch src/01-basics.ts",
+    "watch:02": "tsx watch src/02-functions.ts",
+    "watch:03": "tsx watch src/03-interfaces.ts",
+    "watch:04": "tsx watch src/04-arrays-generics.ts",
+    "watch:05": "tsx watch src/05-unions.ts"
+  },
+  "devDependencies": {
+    "tsx": "^4.19.2",
+    "typescript": "~5.7.2"
+  }
+}

@@ -1,7 +1,7 @@
 /**
  * 範例 5：聯合型別與型別窄化 — 練習檔範本（片段）
  *
- * 建議直接使用完整專案：`examples/05-unions/`。將本檔內容貼到 `src/practice-05-unions.ts` 後依講義步驟 1～8 練習。
+ * 建議順序：先 `tsx-cli/src/05-unions.ts`，再 `examples/05-unions/src/practice-05-unions.ts`。
  */
 
 // 在此開始練習

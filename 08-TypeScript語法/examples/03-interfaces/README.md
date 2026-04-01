@@ -1,6 +1,6 @@
 # 範例 3：interface 與 type（可複製專案）
 
-此資料夾為 [範例 3](../../範例3-interface與type.md) 專用練習環境，可整個複製到任意路徑使用。
+此資料夾為 [範例 3](../../範例3-interface與type.md) 的**網頁（第二階段）**練習環境。**建議**先完成 [tsx-cli](../../tsx-cli/README.md) 的 `src/03-interfaces.ts`，再使用本資料夾。
 
 ## 檔案說明
 
