@@ -8,7 +8,7 @@
 
 ### 學習目標
 
-- 能說明 Node.js 與瀏覽器執行 JavaScript 的差異（簡述即可）
+- 能說明 Node.js 與瀏覽器執行 JavaScript 的差異
 - 會使用 `node -v`、`npm -v` 檢查環境
 - 會在資料夾內建立 `package.json`、執行 `npm install`、執行 `npm run <script>`
 - 理解 `node_modules` 與 `package.json` 的分工

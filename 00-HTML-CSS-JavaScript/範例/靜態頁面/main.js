@@ -1,18 +1,15 @@
-(function () {
-  var count = 0;
-  var valueEl = document.getElementById("value");
-  var btn = document.getElementById("increment");
+import { getCount, increment } from "./counter.js";
 
-  function render() {
-    if (valueEl) valueEl.textContent = String(count);
-  }
+const valueEl = document.getElementById("value");
+const btn = document.getElementById("increment");
 
-  if (btn) {
-    btn.addEventListener("click", function () {
-      count += 1;
-      render();
-    });
-  }
+function render() {
+  if (valueEl) valueEl.textContent = String(getCount());
+}
 
+btn?.addEventListener("click", () => {
+  increment();
   render();
-})();
+});
+
+render();
