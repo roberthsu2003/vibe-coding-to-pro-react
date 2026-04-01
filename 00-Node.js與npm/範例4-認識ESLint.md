@@ -50,7 +50,9 @@
 - 只在開發時使用，不會當成執行時套件打包進一般「網站前端 bundle」的語意仍依專案而定  
 - 他人 clone 專案後需執行 **`npm install`** 才能使用本機的 `eslint`  
 
-在 **練習專案** 目錄可確認 CLI 是否可用：
+在 **練習專案** 目錄可確認 CLI 是否可用。
+
+**`npx` 是什麼？** 它會執行 **`node_modules` 裡**（或暫時下載）的**命令列工具**。`eslint` 安裝後，執行檔通常位於 `node_modules/.bin/eslint`；打 `npx eslint` 等同「用目前專案安裝的那一份 eslint」，不必自己寫長路徑，也不必**全域**安裝 `eslint`。與 **`npm run`** 不同：`npx` 專門用來**跑某個套件提供的 CLI**（此處為 `eslint --version`）。
 
 ```bash
 cd 路徑/00-Node.js與npm/範例/練習專案
