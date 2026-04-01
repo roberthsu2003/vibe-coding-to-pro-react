@@ -1,12 +1,8 @@
 /**
- * 範例 1：變數與基本型別 — 練習檔範本
+ * 範例 1：變數與基本型別 — 練習檔範本（片段）
  *
- * 使用方式（完成「範例 0」建立 `examples` 專案後）：
- * 1. 將本檔複製到 `examples/src/practice-01-basics.ts`
- * 2. 在 `examples/src/main.ts` 最上方加入：import "./practice-01-basics";
- * 3. 依「範例 1」步驟 1～5 在本檔內貼上程式並修改
- *
- * 若已自行建立檔名，請把下面 import 路徑改成你的檔名。
+ * 建議直接使用完整可執行專案：`examples/01-basics/`（內含 index.html、main.ts、style.css）。
+ * 若只要空白片段，可將本檔內容貼到該專案的 `src/practice-01-basics.ts`，再依講義步驟 1～5 修改。
  */
 
 // 在此開始練習（可刪除本註解）

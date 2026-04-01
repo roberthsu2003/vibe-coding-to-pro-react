@@ -1,10 +1,7 @@
 /**
- * 範例 2：函式與型別 — 練習檔範本
+ * 範例 2：函式與型別 — 練習檔範本（片段）
  *
- * 1. 複製為 `examples/src/practice-02-functions.ts`
- * 2. 在 `main.ts` 最上方：`import "./practice-02-functions";`
- * 3. 可註解 `import "./practice-01-basics";` 避免重複執行
- * 4. 依「範例 2」步驟 1～7 在本檔練習
+ * 建議直接使用完整專案：`examples/02-functions/`。將本檔內容貼到 `src/practice-02-functions.ts` 後依講義步驟 1～7 練習。
  */
 
 // 在此開始練習

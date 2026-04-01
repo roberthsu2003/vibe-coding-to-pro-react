@@ -12,17 +12,26 @@
 
 ---
 
-## 步驟 0：建立練習檔案並讓專案載入它
+## 步驟 0：開啟本範例專案並確認可執行
 
-與 [範例 1 步驟 0](範例1-變數與基本型別.md#步驟-0建立練習檔案並讓專案載入它) 相同做法，改使用本範例專用檔名：
+本範例使用**獨立資料夾** [`examples/03-interfaces/`](examples/03-interfaces/)（可整份複製）。內含 **`index.html`**、**`src/main.ts`**、**`src/style.css`**、練習檔 **`src/practice-03-interfaces.ts`**；`console.log` 會同步顯示在網頁上。
 
-1. 終端機進入 **`08-TypeScript語法/examples`**（已依 [範例 0](範例0-建立練習專案.md) 建好 Vite 專案）。
-2. 在 **`src`** 新增 **`practice-03-interfaces.ts`**（可自 [practice-03-interfaces-範本.ts](practice-03-interfaces-範本.ts) 複製）。
-3. 在 **`src/main.ts` 最上方**加入：`import "./practice-03-interfaces";`
-4. **建議**註解掉先前範例的練習檔 `import`（例如 `practice-01-basics`、`practice-02-functions`），避免多個檔同時執行、主控台輸出重疊。
-5. 執行 `npm run dev` 確認專案能啟動。
+1. 終端機進入該資料夾：
 
-接下來**步驟 1～6**的程式碼，請都寫在 **`practice-03-interfaces.ts`**（檔名可自訂，但請與 `main.ts` 的 `import` 一致）。
+   ```bash
+   cd 08-TypeScript語法/examples/03-interfaces
+   ```
+
+2. 安裝依賴並啟動：
+
+   ```bash
+   npm install
+   npm run dev
+   ```
+
+3. 用瀏覽器開啟終端機顯示的本機網址，確認專案能啟動。
+
+接下來**步驟 1～6**的程式碼，請都寫在 **`src/practice-03-interfaces.ts`**。空白片段可參考 [practice-03-interfaces-範本.ts](practice-03-interfaces-範本.ts)。
 
 ---
 
@@ -129,7 +138,7 @@ type Admin = User & { role: 'admin' }
 
 ## 步驟 6：綜合練習（在練習檔中）
 
-在 **`practice-03-interfaces.ts`** 末尾加入（或覆寫前面實驗碼）：
+在 **`src/practice-03-interfaces.ts`** 末尾加入（或覆寫前面實驗碼）：
 
 ```typescript
 interface Todo {
@@ -151,7 +160,7 @@ const list: Todo[] = [
 console.log(summarize(list));
 ```
 
-執行 `npm run dev`，在瀏覽器**開發者工具 → Console** 查看輸出。
+執行 `npm run dev`，在瀏覽器**開發者工具 → Console** 或頁面上「頁面輸出」區塊查看輸出。
 
 ---
 
@@ -169,7 +178,7 @@ console.log(summarize(list));
 
 ## 小練習
 
-在 **`practice-03-interfaces.ts`** 中完成：
+在 **`src/practice-03-interfaces.ts`** 中完成：
 
 1. 定義 `interface Book`，包含 `title: string`、`author: string`、選用欄位 `year?: number`，並建立一個符合的常數。  
 2. 定義 `type Point3D`，在 `Point`（`x`, `y`）之上加上 `z: number`（可用 `type Point = { x: number; y: number }` 再交集）。  
