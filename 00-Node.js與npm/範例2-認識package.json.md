@@ -1,8 +1,8 @@
-# 範例 1：認識 package.json
+# 範例 2：認識 package.json
 
 ## 目標
 
-了解 package.json 的結構與各欄位意義。
+了解 `package.json` 的結構與各欄位意義。
 
 ---
 
@@ -26,7 +26,7 @@
 |------|------|
 | **name** | 專案名稱 |
 | **version** | 版本號 |
-| **private** | true 表示不發布到 npm |
+| **private** | `true` 表示不發布到 npm |
 
 ---
 
@@ -71,4 +71,4 @@
 
 ## 完成
 
-理解 package.json 後，可進行 [範例 2：常用 npm 指令](範例2-常用npm指令.md)。
+理解 `package.json` 後，可進行 [範例 3：常用 npm 指令](範例3-常用npm指令.md)。

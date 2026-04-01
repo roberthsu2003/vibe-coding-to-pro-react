@@ -112,7 +112,11 @@ npm run dev
 npm install typescript --save-dev
 ```
 
-會出現 `node_modules/` 與更新後的 `package.json`／`package-lock.json`。本範例刻意保持最小，請在下一章 [00 - HTML／CSS／Node／TypeScript](../00-HTML-CSS-Node-TypeScript/README.md) 再實際安裝 TypeScript。
+會出現 `node_modules/` 與更新後的 `package.json`／`package-lock.json`。本範例刻意保持最小；若要實際安裝 TypeScript 並練習 `tsc`，可接著閱讀 [00 - HTML／CSS／Node／TypeScript](../00-HTML-CSS-Node-TypeScript/README.md)。
+
+## 下一範例
+
+- [範例 2：認識 package.json](範例2-認識package.json.md)
 
 ---
 
