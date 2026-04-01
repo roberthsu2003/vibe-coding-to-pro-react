@@ -43,13 +43,64 @@ npm start
 npm run hello
 ```
 
+也可以**不經過 npm 腳本**，直接請 Node 執行檔案：
+
+```bash
+node index.js
+```
+
 預期終端機會印出 `Hello from Node.js`（內容見 `index.js`）。
 
-## 步驟四：對照 `package.json`
+## 步驟四：對照 `package.json` 與 npm 指令
 
-打開 `package.json`，注意：
+打開 `範例/最小專案` 內的 `package.json`，`scripts` 大致如下：
 
-- **`scripts`**：`npm start` 其實是 `npm run start` 的簡寫（僅 `start` 有這個捷徑）。
+```json
+{
+  "scripts": {
+    "start": "node index.js",
+    "hello": "node index.js"
+  }
+}
+```
+
+### 執行 `scripts` 的兩種寫法（重點）
+
+| 類型 | 說明 |
+|------|------|
+| **約定捷徑** | 少數腳本名稱（常見如 **`start`、`test`**）可直接寫 **`npm start`、`npm test`**，效果等同 **`npm run start`、`npm run test`**。 |
+| **其餘自訂名稱** | 在 `scripts` 裡自己取的名字（例如 **`hello`、`build`、`dev`**），一律使用 **`npm run 指令名`**。 |
+
+> **補充**：`npm install` 等是 npm **內建功能**（安裝套件），不是透過 `scripts` 執行，與上表不同。
+
+對照本範例：
+
+| 你想做的事 | 可以怎麼寫 | 原因 |
+|------------|------------|------|
+| 執行 `hello` 這個自訂腳本 | `npm run hello` | `hello` 是在 `scripts` 裡定義的名稱，需透過 `npm run` 執行。 |
+| 執行 `start` | `npm start` 或 `npm run start` | `start` 屬於 npm 約定好的捷徑之一，可直接寫 `npm start`（等同 `npm run start`）。 |
+| 在終端機打 `npm hello` | **不行** | `hello` **不是** npm 內建子指令；npm 不會自動對應到 `scripts.hello`。 |
+
+### 為什麼不能打 `npm hello`？
+
+npm 內建只認得**固定幾類**常用指令（例如 `install`、`start`、`test`、`run`…），不會把你在 `scripts` 裡取的名字都變成頂層指令。因此：
+
+- `start`、`test` 等有約定的，可用 **`npm start`、`npm test`** 這種簡寫。
+- 其餘自訂名稱一律要加 **`run`**：
+
+```bash
+npm run hello
+npm run build
+npm run dev
+```
+
+### 簡單記法
+
+- **`package.json` → `scripts` 裡自訂的名稱** → 用 **`npm run 指令名`**。
+- **少數約定捷徑**（常見如 `start`、`test`）→ 可直接 **`npm start`、`npm test`**（仍可用 `npm run start` 等寫法）。
+
+### 其他欄位
+
 - **`name` / `version`**：之後若發佈套件會用到；教學專案通常設 `"private": true` 避免誤發佈。
 
 ## 若之後要裝套件
@@ -57,6 +108,7 @@ npm run hello
 在同一目錄執行（舉例）：
 
 ```bash
+# 安裝 TypeScript 套件到專案中，並加到開發用依賴（devDependencies）：
 npm install typescript --save-dev
 ```
 
