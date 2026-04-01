@@ -11,8 +11,8 @@
 
 | 分類 | 章節 | 摘要 | 範例數 |
 |------|------|------|--------|
-| 前置 | [00 - HTML + CSS + JavaScript](00-HTML-CSS-JavaScript/README.md) | 純靜態三件套；改程式後多半要手動重新整理頁面 | 1 |
-| 前置 | [00 - Node.js 與 npm](00-Node.js與npm/README.md) | Node、npm、`package.json`、套件、ESLint | 4 |
+| 前置 | [00 - HTML + CSS + JavaScript](00-HTML-CSS-JavaScript/README.md) | 純靜態三件套、**`<script type="module">`** 與 `import`／`export` | 1 |
+| 前置 | [00 - Node.js 與 npm](00-Node.js與npm/README.md) | Node、npm、`package.json`（**`type: module`**）、套件、ESLint | 4 |
 | 前置 | [00 - HTML + CSS + Node + TypeScript](00-HTML-CSS-Node-TypeScript/README.md) | `tsc` 編譯為 **ES Module**（`import`／`export`）後由瀏覽器載入；體驗編譯與重新整理 | 1 |
 | 主線 | [01 - 環境建置](01-環境建置/主題.md) | Node、npm、專案結構 | 4 |
 | 主線 | [02 - Vite 入門](02-Vite入門/主題.md) | Vite 是什麼、`vite.config`、dev／build | 3 |
@@ -29,11 +29,18 @@
 - **`01` 起（含 05～07、08、09）**：每章含 **`主題.md`** 與 **`範例N-xxx.md`**。
 - _repository 內資料夾名稱_（如 `02-Vite入門`）與上表對應；若日後調整目錄名，請同步更新本表路徑。
 
+**模組系統（與 React + Vite 一致）**
+
+- 本講義**可執行範例**一律採 **ES Module**：**`import`／`export`**，不使用 CommonJS 的 **`require`**／**`module.exports`**。
+- **瀏覽器**：以 `<script type="module" src="…">` 載入腳本（見 00-HTML/CSS/JS、00-HTML/CSS/Node/TS）。
+- **Node**：在 `package.json` 設定 **`"type": "module"`**（見 00-Node 之最小專案與練習專案）。
+- **主線** Vite + React 專案亦為 ES Module；前置單元先習慣語法，進入 **01** 後可直接銜接。
+
 ---
 
 ## 開發環境演進：為什麼需要 Vite？
 
-在閱讀 [02 - Vite 入門](02-Vite入門/主題.md) 時，可對照 **講義一覽** 中「**前置**」三列：從純 HTML／CSS／JS、到 Node／npm、再到以 `tsc` 編譯 TypeScript，逐步看出「沒有建構工具時」手動步驟與限制；再與 Vite 提供的開發伺服器、模組解析與建置流程比較，會較容易掌握差異。
+在閱讀 [02 - Vite 入門](02-Vite入門/主題.md) 時，可對照 **講義一覽** 中「**前置**」三列：從純 HTML／CSS／JS（**`<script type="module">`**）、到 Node／npm（**`"type": "module"`**）、再到以 `tsc` 編譯 **ES Module** 的 TypeScript，逐步看出「沒有建構工具時」手動步驟與限制；再與 Vite 提供的開發伺服器、模組解析與建置流程比較，會較容易掌握差異（上述皆與 **React + Vite** 預設的模組型別一致）。
 
 （細節仍以各前置單元內文為準，本段不另列重複連結。）
 

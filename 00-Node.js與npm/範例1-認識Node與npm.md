@@ -47,10 +47,11 @@ cd 路徑/00-Node.js與npm/範例/最小專案
 
 ## 步驟四：對照 `package.json`
 
-打開同目錄的 `package.json`，`scripts` 如下：
+打開同目錄的 `package.json`，已含 **`"type": "module"`**（與本講義 **React + Vite** 專案相同，採 **ES Module**），`scripts` 如下：
 
 ```json
 {
+  "type": "module",
   "scripts": {
     "start": "node index.js",
     "hello": "node index.js"

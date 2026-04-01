@@ -2,11 +2,11 @@
 
 ## 主題說明
 
-在沒有 Node、沒有建置工具的前提下，用瀏覽器就能執行的最典型前端形態。適合對照後續 **Node.js／TypeScript／Vite** 時，工具究竟補上了哪些缺口。
+在沒有 Node、沒有建置工具的前提下，用瀏覽器就能執行的最典型前端形態；範例腳本採 **ES Module**（`<script type="module">`、`import`／`export`），與後續 **React + Vite** 一致。適合對照 **Node.js／TypeScript／Vite** 時，工具究竟補上了哪些缺口。
 
 ### 學習目標
 
-- 能用編輯器建立可運作的靜態頁面（HTML／CSS／JS）
+- 能用編輯器建立可運作的靜態頁面（HTML／CSS／JS），並以 **ES Module** 撰寫腳本
 - 說得出「純三件套」的優點與實務限制（模組、型別、開發迴圈等）
 
 
