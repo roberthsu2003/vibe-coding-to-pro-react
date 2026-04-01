@@ -2,12 +2,12 @@
 
 ## 主題說明
 
-在瀏覽器仍只認得 JavaScript 的前提下，我們用 **TypeScript** 撰寫邏輯，再透過 **`tsc`（TypeScript Compiler）** 編譯成 `.js`，由 HTML 引用。此模式**沒有** Vite 的開發伺服器與 HMR，能清楚感受：每次改 `.ts` 都要先編譯、再重新整理頁面。
+在瀏覽器仍只認得 JavaScript 的前提下，我們用 **TypeScript** 撰寫邏輯（含 **`import`／`export`**），再透過 **`tsc`** 編譯成 **ES Module** 的 `.js`，由 HTML 以 `<script type="module">` 引用。此模式**沒有** Vite 的開發伺服器與 HMR，能清楚感受：每次改 `.ts` 都要先編譯、再重新整理頁面；多檔模組時還需本機 **http** 服務，不宜只靠 `file://` 雙擊。
 
 ### 學習目標
 
-- 會用 npm 安裝 `typescript` 並執行 `npx tsc`
-- 能對照 `src/*.ts` 與輸出 `dist/*.js`
+- 會用 npm 安裝 `typescript` 並執行 `tsc`，產出 **ES Module**
+- 能對照 `src/*.ts` 與輸出 `dist/*.js`，並理解 **`import` 路徑寫 `./greet.js`（對應 `greet.ts`）** 的慣例
 - 能說明為何進階專案常再導入 **bundler／建構工具**（例如 Vite）
 
 ### 本章範例
