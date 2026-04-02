@@ -1,52 +1,106 @@
 /**
- * 範例 5：聯合型別與型別窄化 — 網頁練習檔（第二階段）
- *
- * 建議先完成 `tsx-cli/src/05-unions.ts`（npm run 05），再於此檔延續或貼上程式。
- * 執行：此資料夾 `npm install` 後 `npm run dev`。
- * 輸出：瀏覽器 Console 或頁面上「頁面輸出」區塊。
- *
- * ─── 練習步驟（依講義 範例5 完成下列 TODO）─────────────────────
+ * 範例 5｜網頁版：聯合型別、字面量、可區辨聯合、switch 窄化
+ * 與 tsx-cli 不同：以「載入狀態控制台」模擬 API 狀態機。
  */
 
-// TODO 步驟1：聯合型別 — 宣告 type Id = string | number，試賦值兩種型別
-// type Id = string | number
-// let value: Id = "user-1"
-// value = 1001
-// console.log("Id:", value)
+type LoadState =
+  | { status: "idle" }
+  | { status: "loading" }
+  | { status: "success"; items: string[] }
+  | { status: "error"; message: string };
 
-// TODO 步驟2：字面量型別 — 讓值只能是幾個固定字串
-// type Theme = "light" | "dark"
-// const theme: Theme = "dark"
-// console.log("theme:", theme)
+let state: LoadState = { status: "idle" };
 
-// TODO 步驟4：typeof 窄化 — 在 if 分支裡分別使用 .length 與 .toFixed
-// function printLength(x: string | number): void {
-//   if (typeof x === "string") {
-//     console.log("長度:", x.length)
-//   } else {
-//     console.log("數值:", x.toFixed(2))
-//   }
-// }
-// printLength("hello")
-// printLength(3.14)
+function describe(state: LoadState): string {
+  switch (state.status) {
+    case "idle":
+      return "尚未請求資料。";
+    case "loading":
+      return "載入中…";
+    case "success":
+      return `已載入 ${state.items.length} 筆：${state.items.join("、")}`;
+    case "error":
+      return `錯誤：${state.message}`;
+  }
+}
 
-// TODO 步驟5：null 排除 — 寫 getLength(s: string | null): number
-// function getLength(s: string | null): number {
-//   if (s === null) return 0
-//   return s.length
-// }
-// console.log(getLength(null), getLength("hi"))
+function renderMessage(state: LoadState): string {
+  switch (state.status) {
+    case "idle":
+      return "按下方按鈕模擬請求。";
+    case "loading":
+      return "請稍候，正在向伺服器索取資料…";
+    case "success": {
+      const list = state.items.map((s) => `<li>${escapeHtml(s)}</li>`).join("");
+      return `取得資料：<ul>${list}</ul>`;
+    }
+    case "error":
+      return `<strong>${escapeHtml(state.message)}</strong>`;
+  }
+}
 
-// TODO 步驟6：可區辨聯合 — 用 ok: true/false 區分 Success / Failure
-// type Success = { ok: true; data: string }
-// type Failure = { ok: false; error: string }
-// type Result = Success | Failure
-// function handle(r: Result): void { ... }
+function escapeHtml(s: string): string {
+  return s
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;");
+}
 
-// TODO 步驟8：綜合練習（貼上並執行講義的 LoadState / describe 範例）
+function pillClass(s: LoadState): string {
+  return `status-pill ${s.status}`;
+}
 
-// ─── 小練習 ──────────────────────────────────────────────────────
-// 1. 定義 type Role = "guest" | "user" | "admin"，寫 canEdit(role: Role): boolean
-// 2. 寫 addOne(x: number | string)：number 直接 +1，string 先 Number() 再 +1
-// 3. 建立 type ApiResult = { ok: true; value: number } | { ok: false; reason: string }
-//    用 if(result.ok) 分別存取 value 與 reason
+function pillLabel(s: LoadState): string {
+  if (s.status === "idle") return "idle";
+  if (s.status === "loading") return "loading";
+  if (s.status === "success") return "success";
+  return "error";
+}
+
+function mount(): void {
+  const root = document.querySelector<HTMLDivElement>("#app");
+  if (!root) return;
+
+  function draw(): void {
+    if (!root) return;
+    root.innerHTML = `
+      <div class="console-frame">
+        <div class="bar"><span class="dot" aria-hidden="true"></span> 範例 5 · 聯合型別</div>
+        <div class="body">
+          <p class="${pillClass(state)}">${pillLabel(state)}</p>
+          <div class="message">${renderMessage(state)}</div>
+          <p class="hint" style="margin-top:1rem;color:#6b728d;font-size:0.8rem;">
+            ${describe(state)}
+          </p>
+          <div class="controls">
+            <button type="button" data-action="idle">重設 idle</button>
+            <button type="button" data-action="loading">開始 loading</button>
+            <button type="button" data-action="success">成功 success</button>
+            <button type="button" data-action="error">失敗 error</button>
+          </div>
+        </div>
+      </div>
+      <p class="hint">
+        型別為 <code>LoadState</code> 的<strong>可區辨聯合</strong>：<code>switch (state.status)</code> 內可安全存取
+        <code>items</code> 或 <code>message</code>。此畫面與 tsx-cli 的 <code>console.log</code> 示範目的相同，呈現方式不同。
+      </p>
+    `;
+
+    root.querySelectorAll<HTMLButtonElement>("button[data-action]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const action = btn.dataset.action;
+        if (action === "idle") state = { status: "idle" };
+        else if (action === "loading") state = { status: "loading" };
+        else if (action === "success")
+          state = { status: "success", items: ["筆記本", "咖啡", "程式碼"] };
+        else if (action === "error") state = { status: "error", message: "網路逾時（示範）" };
+        draw();
+      });
+    });
+  }
+
+  draw();
+}
+
+mount();

@@ -1,13 +1,10 @@
 :root {
-  color-scheme: light dark;
-  --bg: #0f1419;
-  --panel: #1a2332;
-  --text: #e8eef7;
-  --muted: #94a3b8;
-  --accent: #38bdf8;
-  --border: rgba(148, 163, 184, 0.35);
-  font-family: "IBM Plex Sans", "Noto Sans TC", system-ui, sans-serif;
-  line-height: 1.5;
+  --wine: #3d0f17;
+  --gold: #c9a227;
+  --parchment: #f5f0e6;
+  --ink: #1a1214;
+  --muted: #8b7e82;
+  font-family: "Lato", "Noto Sans TC", system-ui, sans-serif;
 }
 
 *,
@@ -19,91 +16,127 @@
 body {
   margin: 0;
   min-height: 100vh;
-  background: radial-gradient(1200px 600px at 10% -10%, #1e3a5f 0%, transparent 55%),
-    radial-gradient(900px 500px at 90% 20%, #134e4a 0%, transparent 50%),
-    var(--bg);
-  color: var(--text);
+  background: linear-gradient(165deg, #2a0a10 0%, var(--wine) 38%, #1a0609 100%);
+  color: var(--parchment);
 }
 
-.shell {
+#app {
   max-width: 52rem;
   margin: 0 auto;
-  padding: 2rem 1.25rem 3rem;
+  padding: 2.5rem 1.25rem 3.5rem;
 }
 
-.hero .badge {
+.shelf-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.shelf-header .ribbon {
   display: inline-block;
-  margin: 0 0 0.5rem;
-  padding: 0.2rem 0.6rem;
-  font-size: 0.75rem;
-  letter-spacing: 0.06em;
+  padding: 0.2rem 0.9rem;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: var(--accent);
-  border: 1px solid var(--border);
-  border-radius: 999px;
-  background: rgba(56, 189, 248, 0.08);
+  color: var(--wine);
+  background: linear-gradient(90deg, #e8d48b, var(--gold));
+  border-radius: 2px;
 }
 
-h1 {
-  margin: 0 0 0.75rem;
-  font-size: clamp(1.5rem, 4vw, 2rem);
+.shelf-header h1 {
+  margin: 0.75rem 0 0.4rem;
+  font-family: "Playfair Display", "Noto Serif TC", Georgia, serif;
+  font-size: clamp(1.6rem, 4vw, 2.1rem);
   font-weight: 600;
-  letter-spacing: -0.02em;
+  letter-spacing: 0.02em;
 }
 
-.hint {
-  margin: 0;
+.shelf-header p {
+  margin: 0 auto;
+  max-width: 28rem;
+  font-size: 0.92rem;
   color: var(--muted);
-  font-size: 0.95rem;
+  line-height: 1.5;
 }
 
-kbd {
-  padding: 0.1em 0.35em;
-  font-size: 0.85em;
-  font-family: ui-monospace, monospace;
-  border: 1px solid var(--border);
+.book-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+  gap: 1.25rem;
+}
+
+.book-card {
+  position: relative;
+  padding: 1.35rem 1.25rem 1.5rem;
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.09) 0%, rgba(0, 0, 0, 0.15) 100%);
+  border: 1px solid rgba(201, 162, 39, 0.25);
   border-radius: 4px;
-  background: rgba(255, 255, 255, 0.06);
+  box-shadow: 0 16px 32px rgba(0, 0, 0, 0.35);
+  transition: transform 0.2s ease, border-color 0.2s ease;
 }
 
-.panel {
-  margin-top: 1.75rem;
-  padding: 1rem 1.125rem;
-  border-radius: 12px;
-  border: 1px solid var(--border);
-  background: var(--panel);
-  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.25);
+.book-card:hover {
+  transform: translateY(-3px);
+  border-color: rgba(201, 162, 39, 0.55);
 }
 
-.panel h2 {
-  margin: 0 0 0.75rem;
-  font-size: 1rem;
+.book-card .spine {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 5px;
+  background: linear-gradient(180deg, var(--gold), #8b6914);
+  border-radius: 4px 0 0 4px;
+}
+
+.book-card .title {
+  margin: 0 0 0.35rem;
+  padding-left: 0.5rem;
+  font-family: "Playfair Display", serif;
+  font-size: 1.1rem;
   font-weight: 600;
-  color: var(--muted);
+  line-height: 1.35;
+  color: #fff;
 }
 
-.console-mirror {
+.book-card .author {
   margin: 0;
-  min-height: 6rem;
-  padding: 0.875rem 1rem;
-  font-size: 0.9rem;
-  line-height: 1.45;
-  font-family: "IBM Plex Mono", ui-monospace, monospace;
-  white-space: pre-wrap;
-  word-break: break-word;
-  color: #e2e8f0;
-  background: #0c1118;
-  border-radius: 8px;
-  border: 1px solid rgba(148, 163, 184, 0.2);
-}
-
-.files {
-  margin: 1.25rem 0 0;
-  font-size: 0.8rem;
+  padding-left: 0.5rem;
+  font-size: 0.82rem;
   color: var(--muted);
 }
 
-.files code {
-  font-size: 0.85em;
-  color: #cbd5e1;
+.book-card .year {
+  margin: 0.75rem 0 0;
+  padding-left: 0.5rem;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+
+.book-card .isbn {
+  margin: 0.85rem 0 0;
+  padding-top: 0.65rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  font-size: 0.68rem;
+  font-family: ui-monospace, monospace;
+  color: rgba(245, 240, 230, 0.55);
+  word-break: break-all;
+}
+
+.stats {
+  margin-top: 2rem;
+  padding: 1rem 1.25rem;
+  font-size: 0.88rem;
+  color: var(--muted);
+  background: rgba(0, 0, 0, 0.25);
+  border-radius: 8px;
+  border: 1px solid rgba(201, 162, 39, 0.15);
+}
+
+.stats strong {
+  color: var(--gold);
+  font-weight: 700;
 }

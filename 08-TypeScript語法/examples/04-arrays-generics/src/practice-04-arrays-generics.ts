@@ -1,45 +1,101 @@
 /**
- * 範例 4：陣列與泛型入門 — 網頁練習檔（第二階段）
- *
- * 建議先完成 `tsx-cli/src/04-arrays-generics.ts`（npm run 04），再於此檔延續或貼上程式。
- * 執行：此資料夾 `npm install` 後 `npm run dev`。
- * 輸出：瀏覽器 Console 或頁面上「頁面輸出」區塊。
- *
- * ─── 練習步驟（依講義 範例4 完成下列 TODO）─────────────────────
+ * 範例 4｜網頁版：陣列、唯讀、泛型函式（與 tsx-cli 的 console 版不同）
+ * 用「成績光譜」呈現：平均、map、泛型 firstItem / last
  */
 
-// TODO 步驟1：陣列型別的兩種寫法 — 試試 number[] 與 Array<string>
-// const nums: number[] = [1, 2, 3]
-// const tags: Array<string> = ["ts", "vite"]
-// console.log(nums, tags)
+interface SubjectScore {
+  name: string;
+  value: number;
+}
 
-// TODO 步驟2：物件陣列 — 定義 interface 後宣告 Task[]
-// interface Task { id: number; title: string }
-// const tasks: Task[] = [
-//   { id: 1, title: "寫文件" },
-//   { id: 2, title: "寫測試" },
-// ]
-// console.log(tasks.map(t => t.title))
+function average(scores: number[]): number {
+  if (scores.length === 0) return 0;
+  const sum = scores.reduce((a, b) => a + b, 0);
+  return sum / scores.length;
+}
 
-// TODO 步驟3：唯讀陣列 — 用 readonly 或 ReadonlyArray<T>
-// const seq: readonly number[] = [1, 2, 3]
-// seq.push(4)  // ← 試著取消這行的註解，觀察錯誤
+function firstItem<T>(items: readonly T[]): T | undefined {
+  return items[0];
+}
 
-// TODO 步驟4：泛型函式 — 寫一個 firstItem<T>(items: T[]): T | undefined
-// function firstItem<T>(items: T[]): T | undefined {
-//   return items[0]
-// }
-// console.log(firstItem([10, 20]))   // 10
-// console.log(firstItem(["a"]))      // a
+function lastItem<T>(items: readonly T[]): T | undefined {
+  if (items.length === 0) return undefined;
+  return items[items.length - 1];
+}
 
-// TODO 步驟5（選做）：Promise<T> — 宣告回傳 Promise<number> 的 async function
-// async function loadId(): Promise<number> { return 42 }
-// const id = await loadId()
-// console.log("id:", id)
+function mapNames(rows: SubjectScore[]): string[] {
+  return rows.map((r) => r.name);
+}
 
-// TODO 步驟7：綜合練習（貼上並執行講義的 Score / average / mapNames 範例）
+const data: SubjectScore[] = [
+  { name: "國文", value: 82 },
+  { name: "數學", value: 91 },
+  { name: "英文", value: 78 },
+  { name: "物理", value: 88 },
+];
 
-// ─── 小練習 ──────────────────────────────────────────────────────
-// 1. 宣告 const words: string[]，放 3 個英文單字，.map 轉大寫後印出
-// 2. 寫 last<T>(items: T[]): T | undefined，回傳最後一個元素
-// 3. 把 readonly number[] 傳給有 .push 的函式，觀察型別錯誤
+function mount(): void {
+  const root = document.querySelector<HTMLDivElement>("#app");
+  if (!root) return;
+
+  const scores = data.map((d) => d.value);
+  const avg = average(scores);
+  const maxScore = 100;
+  const names = mapNames(data);
+  const firstName = firstItem(names);
+  const lastName = lastItem(names);
+
+  root.innerHTML = `
+    <header class="top">
+      <p class="chip">範例 4 · 陣列與泛型</p>
+      <h1>成績光譜</h1>
+      <p>
+        資料為 <code>SubjectScore[]</code>；長條圖寬度依分數比例。下方統計用到
+        <code>average(number[])</code> 與泛型 <code>firstItem&lt;T&gt;</code>。
+      </p>
+    </header>
+    <div class="summary">
+      <div class="stat">
+        <span class="num">${avg.toFixed(1)}</span>
+        <span class="lbl">平均</span>
+      </div>
+      <div class="stat">
+        <span class="num">${firstName ?? "—"}</span>
+        <span class="lbl">firstItem&lt;string&gt;</span>
+      </div>
+      <div class="stat">
+        <span class="num">${lastName ?? "—"}</span>
+        <span class="lbl">lastItem&lt;string&gt;</span>
+      </div>
+    </div>
+    <div class="chart" role="list">
+      ${data
+        .map(
+          (row) => `
+        <div class="row" role="listitem">
+          <span class="name">${escapeHtml(row.name)}</span>
+          <div class="bar-wrap" aria-hidden="true">
+            <div class="bar" style="width:${(row.value / maxScore) * 100}%"></div>
+          </div>
+          <span class="val">${row.value}</span>
+        </div>
+      `,
+        )
+        .join("")}
+    </div>
+    <p class="generic-demo">
+      <code>readonly number[]</code> 可傳入 <code>average</code>（唯讀陣列與可變陣列在「讀取」情境常可互通）。
+      試在程式碼中將 <code>data</code> 改為 <code>readonly SubjectScore[]</code> 並觀察型別檢查。
+    </p>
+  `;
+}
+
+function escapeHtml(s: string): string {
+  return s
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;");
+}
+
+mount();

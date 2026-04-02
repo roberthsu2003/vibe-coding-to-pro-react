@@ -1,49 +1,89 @@
 /**
- * 範例 3：interface 與 type — 網頁練習檔（第二階段）
- *
- * 建議先完成 `tsx-cli/src/03-interfaces.ts`（npm run 03），再於此檔延續或貼上程式。
- * 執行：此資料夾 `npm install` 後 `npm run dev`。
- * 輸出：瀏覽器 Console 或頁面上「頁面輸出」區塊。
- *
- * ─── 練習步驟（依講義 範例3 完成下列 TODO）─────────────────────
+ * 範例 3｜網頁版：interface / type 描述物件（readonly、選用屬性、extends）
+ * 與 tsx-cli 不同：這裡用「書架卡片」呈現結構化資料。
  */
 
-// TODO 步驟1：用 interface 描述物件（User：id、name、email）
-// interface User {
-//   id: number
-//   name: string
-//   email: string
-// }
-// const u: User = { id: 1, name: "小明", email: "ming@example.com" }
-// console.log("User:", u.name)
+interface Book {
+  readonly isbn: string;
+  title: string;
+  author: string;
+  year?: number;
+}
 
-// TODO 步驟2：在 interface 中加入 readonly 與選用屬性（?）
-// interface Product {
-//   readonly sku: string
-//   title: string
-//   discount?: number
-// }
-// const p: Product = { sku: "A-001", title: "筆記本" }
-// console.log("Product:", p.title, p.discount ?? "無折扣")
+interface Audiobook extends Book {
+  durationMin: number;
+}
 
-// TODO 步驟3：extends — 讓新 interface 繼承已有的 interface
-// interface Named { name: string }
-// interface Member extends Named { memberSince: number }
-// const m: Member = { name: "小華", memberSince: 2024 }
-// console.log("Member:", m.name, m.memberSince)
+type BookListItem = Book | Audiobook;
 
-// TODO 步驟4：用 type 定義物件結構，並試試聯合與交集
-// type Point = { x: number; y: number }
-// type ID = string | number
-// type Admin = User & { role: "admin" }
+function isAudiobook(b: BookListItem): b is Audiobook {
+  return "durationMin" in b;
+}
 
-// TODO 步驟6：綜合練習（貼上並執行講義的 Todo / summarize 範例）
-// interface Todo { id: number; title: string; done: boolean }
-// function summarize(items: Todo[]): string { ... }
-// const list: Todo[] = [...]
-// console.log(summarize(list))
+function summarizeBooks(items: Book[]): string {
+  const withYear = items.filter((b) => b.year !== undefined).length;
+  return `共 ${items.length} 本，其中 ${withYear} 本有標示出版年。`;
+}
 
-// ─── 小練習 ──────────────────────────────────────────────────────
-// 1. 定義 interface Book（title, author, year?），建立一個符合的常數
-// 2. 定義 type Point3D，在 Point 基礎上加入 z: number（用交集 &）
-// 3. 讓某函式接受 interface 參數，故意少傳一個必填屬性，觀察錯誤
+const shelf: BookListItem[] = [
+  { isbn: "978-986-123-001", title: "海邊的卡夫卡", author: "村上春樹", year: 2003 },
+  { isbn: "978-986-456-002", title: "設計模式", author: "Gang of Four", year: 1994 },
+  {
+    isbn: "978-986-789-003",
+    title: "深夜食堂有聲書",
+    author: "安倍夜郎",
+    durationMin: 420,
+  },
+];
+
+function renderCard(b: BookListItem): string {
+  const yearBlock =
+    b.year !== undefined ? `<p class="year">${b.year} 年出版</p>` : "";
+  const extra = isAudiobook(b)
+    ? `<p class="year">有聲書 · ${b.durationMin} 分鐘</p>`
+    : "";
+  return `
+    <article class="book-card">
+      <span class="spine" aria-hidden="true"></span>
+      <h2 class="title">${escapeHtml(b.title)}</h2>
+      <p class="author">${escapeHtml(b.author)}</p>
+      ${yearBlock}
+      ${extra}
+      <p class="isbn">ISBN ${escapeHtml(b.isbn)}</p>
+    </article>
+  `;
+}
+
+function escapeHtml(s: string): string {
+  return s
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;");
+}
+
+function mount(): void {
+  const root = document.querySelector<HTMLDivElement>("#app");
+  if (!root) return;
+
+  const plainBooks: Book[] = shelf.map((item) => ({
+    isbn: item.isbn,
+    title: item.title,
+    author: item.author,
+    year: item.year,
+  }));
+
+  root.innerHTML = `
+    <header class="shelf-header">
+      <p class="ribbon">範例 3 · interface 與 type</p>
+      <h1>閱讀清單</h1>
+      <p>每張卡對應一個符合 <code>interface Book</code> 的物件；含 <code>readonly</code>、選用 <code>year?</code>，以及擴充 <code>Audiobook</code>。</p>
+    </header>
+    <div class="book-grid" role="list">
+      ${shelf.map((b) => renderCard(b)).join("")}
+    </div>
+    <p class="stats">${summarizeBooks(plainBooks)}</p>
+  `;
+}
+
+mount();

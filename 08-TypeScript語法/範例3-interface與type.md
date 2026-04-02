@@ -29,7 +29,7 @@
 
 ## 步驟 0b：開啟本範例網頁專案並確認可執行
 
-本範例使用**獨立資料夾** [`examples/03-interfaces/`](examples/03-interfaces/)（可整份複製）。內含 **`index.html`**、**`src/main.ts`**、**`src/style.css`**、練習檔 **`src/practice-03-interfaces.ts`**；`console.log` 會同步顯示在網頁上。
+本範例使用**獨立資料夾** [`examples/03-interfaces/`](examples/03-interfaces/)（可整份複製）。內含 **`index.html`**、**`src/main.ts`**、**`src/style.css`**、練習檔 **`src/practice-03-interfaces.ts`**。網頁版為「**閱讀清單書架**」，以卡片呈現 `interface`，**不需**與 tsx-cli 逐行相同。
 
 1. 終端機進入該資料夾：
 
@@ -175,7 +175,7 @@ const list: Todo[] = [
 console.log(summarize(list));
 ```
 
-執行 `npm run dev`，在瀏覽器**開發者工具 → Console** 或頁面上「頁面輸出」區塊查看輸出。
+執行 `npm run dev`，在頁面上檢視書籍卡片與統計文字。
 
 ---
 

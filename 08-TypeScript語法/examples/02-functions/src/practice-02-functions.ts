@@ -1,56 +1,106 @@
 /**
- * 範例 2：函式與型別 — 網頁練習檔（第二階段）
- *
- * 建議先完成 `tsx-cli/src/02-functions.ts`（npm run 02），再於此檔延續或貼上程式。
- * 執行：此資料夾 `npm install` 後 `npm run dev`。
- * 輸出：瀏覽器 Console 或頁面上「頁面輸出」區塊。
- *
- * ─── 練習步驟（依講義 範例2 完成下列 TODO）─────────────────────
+ * 範例 2｜網頁版：函式與型別（參數、回傳、選用、預設、void）
+ * 與 tsx-cli 的 console 示範不同：這裡用「結帳收據」呈現相同觀念。
  */
 
-// TODO 步驟1：宣告一個函式，參數與回傳值都標上型別
-// function greet(name: string): string {
-//   return `你好，${name}`
-// }
-// console.log(greet("小明"))
+function formatPrice(amount: number, currency = "TWD"): string {
+  return `${currency} ${amount.toFixed(0)}`;
+}
 
-// TODO 步驟2：回傳值型別 — 試著省略後讓 TypeScript 自動推斷
-// function add(a: number, b: number) {   // 回傳型別由 TypeScript 推斷
-//   return a + b
-// }
-// console.log("add:", add(3, 4))
+function greetCustomer(name: string): string {
+  return `您好，${name}，歡迎光臨。`;
+}
 
-// TODO 步驟3：用箭頭函式改寫 greet 或 add
-// const multiply = (a: number, b: number): number => a * b
-// console.log("multiply:", multiply(6, 7))
+function describeLine(item: string, qty?: number): string {
+  const n = qty ?? 1;
+  return `${item} × ${n}`;
+}
 
-// TODO 步驟4：選用參數 — 在參數後加 ? 使其可省略
-// function introduce(name: string, age?: number): string {
-//   if (age !== undefined) return `${name}，${age} 歲`
-//   return name
-// }
-// console.log(introduce("小明"))
-// console.log(introduce("小華", 20))
+function appendReceiptLog(lines: string[]): void {
+  const pre = document.querySelector<HTMLPreElement>("#receipt-body");
+  if (pre) pre.textContent = lines.join("\n");
+}
 
-// TODO 步驟5：預設參數與 void 回傳型別
-// function createLabel(text: string, prefix = "標籤"): string {
-//   return `${prefix}：${text}`
-// }
-// console.log(createLabel("重要"))
-// console.log(createLabel("警告", "注意"))
+function mount(): void {
+  const root = document.querySelector<HTMLDivElement>("#app");
+  if (!root) return;
 
-// TODO 步驟7：綜合練習（貼上並執行講義的 formatPrice / printInvoice）
-// function formatPrice(amount: number, currency = "TWD"): string {
-//   return `${currency} ${amount.toFixed(0)}`
-// }
-// function printInvoice(title: string, total?: number): void {
-//   console.log(`單據：${title}`)
-//   if (total !== undefined) console.log(formatPrice(total))
-// }
-// printInvoice("午餐")
-// printInvoice("書籍", 350)
+  let customerName = "小華";
+  let itemName = "藜麥沙拉";
+  let amount = 120;
+  let currency: "TWD" | "USD" = "TWD";
+  let qty: number | undefined = 1;
 
-// ─── 小練習 ──────────────────────────────────────────────────────
-// 1. 寫 isPassing(score: number): boolean，>= 60 時回傳 true
-// 2. 寫 repeat(text: string, times = 1): string，回傳重複字串
-// 3. 讓某函式宣告回傳 number 但有路徑沒有 return，觀察 TypeScript 的警告
+  function redraw(): void {
+    const lines: string[] = [];
+    lines.push(greetCustomer(customerName));
+    lines.push("— — —");
+    lines.push(describeLine(itemName, qty));
+    lines.push(formatPrice(amount, currency));
+    if (qty !== undefined && qty > 1) {
+      lines.push(`小計意涵：單價與數量已分開（選用參數 qty）`);
+    }
+    appendReceiptLog(lines);
+  }
+
+  root.innerHTML = `
+    <div class="brand">
+      <p class="tag">範例 2 · 函式與型別</p>
+      <h1>輕食結帳</h1>
+      <p>調整欄位後按「更新收據」— 對應函式參數型別、預設幣別與選用數量。</p>
+    </div>
+    <div class="form">
+      <label>顧客名（string）
+        <input type="text" id="inp-name" value="${customerName}" />
+      </label>
+      <label>品項（string）
+        <input type="text" id="inp-item" value="${itemName}" />
+      </label>
+      <div class="row">
+        <label>金額（number）
+          <input type="number" id="inp-amount" value="${amount}" min="0" step="1" />
+        </label>
+        <label>幣別（預設 TWD）
+          <select id="inp-currency">
+            <option value="TWD" selected>TWD</option>
+            <option value="USD">USD</option>
+          </select>
+        </label>
+      </div>
+      <label>數量（選填；空白 = 省略 qty）
+        <input type="number" id="inp-qty" value="${qty}" min="1" step="1" placeholder="留空則不傳 qty" />
+      </label>
+      <div class="btn-row">
+        <button type="button" id="btn-update">更新收據</button>
+        <button type="button" id="btn-clear-qty" class="secondary">清空數量（測試 ?）</button>
+      </div>
+    </div>
+    <section class="receipt" aria-live="polite">
+      <h2>收據預覽</h2>
+      <pre id="receipt-body"></pre>
+    </section>
+    <p class="hint">
+      練習：試改 <code>formatPrice</code> 的回傳格式，或新增一個回傳 <code>boolean</code> 的 <code>isPassing(score: number)</code> 並在收據中顯示「及格與否」。
+    </p>
+  `;
+
+  redraw();
+
+  document.querySelector<HTMLButtonElement>("#btn-update")?.addEventListener("click", () => {
+    customerName = (document.querySelector<HTMLInputElement>("#inp-name")?.value ?? "").trim() || "訪客";
+    itemName = (document.querySelector<HTMLInputElement>("#inp-item")?.value ?? "").trim() || "未命名";
+    amount = Number(document.querySelector<HTMLInputElement>("#inp-amount")?.value) || 0;
+    const cur = document.querySelector<HTMLSelectElement>("#inp-currency")?.value;
+    currency = cur === "USD" ? "USD" : "TWD";
+    const qRaw = document.querySelector<HTMLInputElement>("#inp-qty")?.value;
+    qty = qRaw === "" || qRaw === undefined ? undefined : Number(qRaw);
+    redraw();
+  });
+
+  document.querySelector<HTMLButtonElement>("#btn-clear-qty")?.addEventListener("click", () => {
+    const el = document.querySelector<HTMLInputElement>("#inp-qty");
+    if (el) el.value = "";
+  });
+}
+
+mount();
