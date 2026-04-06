@@ -2,7 +2,7 @@
 
 ## 主題說明
 
-本單元介紹最傳統的前端開發方式：**不需要 Node.js、不需要建置工具**，僅用瀏覽器即可執行。若你對 **HTML／CSS** 仍不熟，可先讀 [00 - HTML 與 CSS](../00-HTML-CSS/README.md)。
+本單元介紹最傳統的前端開發方式：**不需要 Node.js、不需要建置工具**，僅用瀏覽器即可執行。若你對 **HTML／CSS** 仍不熟，可先讀 [00 - HTML 與 CSS](../00-HTML-CSS/README.md)；若想先認識 **Tailwind**（utility-first、CDN），可讀 [00 - HTML + Tailwind CSS](../00-HTML-TailwindCSS/README.md)。
 
 範例腳本採用 **ES Module** 語法（`<script type="module">`、`import`／`export`），與後續 **React + Vite** 專案的模組系統保持一致。透過這個單元，你可以理解「純三件套」的運作方式，並在後續學習 Node.js、TypeScript、Vite 時，清楚辨識這些工具究竟解決了哪些問題。
 
@@ -22,4 +22,4 @@
 
 ---
 
-**上一章**：[00 - HTML 與 CSS](../00-HTML-CSS/README.md) | **下一章**：[00 - Node.js 與 npm](../00-Node.js與npm/README.md) | **跳至**：[02 - Vite 入門](../02-Vite入門/主題.md)
+**上一章**：[00 - HTML + Tailwind CSS](../00-HTML-TailwindCSS/README.md) | **下一章**：[00 - Node.js 與 npm](../00-Node.js與npm/README.md) | **跳至**：[02 - Vite 入門](../02-Vite入門/主題.md)

@@ -13,6 +13,7 @@
 | 章節 | 摘要 | 範例數 |
 |------|------|--------|
 | [00 - HTML 與 CSS](00-HTML-CSS/README.md) | 網頁骨架、語意標籤、CSS 選擇器與盒模型（**不含** JavaScript） | 1 |
+| [00 - HTML + Tailwind CSS](00-HTML-TailwindCSS/README.md) | **Utility-first**、Play **CDN**、常用 utility 與排版（**不含**建置／npm） | 1 |
 | [00 - HTML + CSS + JavaScript](00-HTML-CSS-JavaScript/README.md) | 純靜態三件套、**`<script type="module">`** 與 `import`／`export` | 1 |
 | [00 - Node.js 與 npm](00-Node.js與npm/README.md) | Node、npm、`package.json`（**`type: module`**）、套件、ESLint | 4 |
 | [00 - HTML + CSS + Node + TypeScript](00-HTML-CSS-Node-TypeScript/README.md) | `tsc` 編譯為 **ES Module**（`import`／`export`）後由瀏覽器載入；體驗編譯與重新整理 | 1 |
@@ -52,7 +53,7 @@
 
 ## 開發環境演進：為什麼需要 Vite？
 
-在閱讀 [02 - Vite 入門](02-Vite入門/主題.md) 時，可對照 **講義一覽** 中「**前置**」各列：從 [HTML／CSS 入門](00-HTML-CSS/README.md)、到純 HTML／CSS／JS（**`<script type="module">`**）、到 Node／npm（**`"type": "module"`**）、再到以 `tsc` 編譯 **ES Module** 的 TypeScript，逐步看出「沒有建構工具時」手動步驟與限制；再與 Vite 提供的開發伺服器、模組解析與建置流程比較，會較容易掌握差異（上述皆與 **React + Vite** 預設的模組型別一致）。
+在閱讀 [02 - Vite 入門](02-Vite入門/主題.md) 時，可對照 **講義一覽** 中「**前置**」各列：從 [HTML／CSS 入門](00-HTML-CSS/README.md)、（可選）[HTML + Tailwind CSS](00-HTML-TailwindCSS/README.md)、到純 HTML／CSS／JS（**`<script type="module">`**）、到 Node／npm（**`"type": "module"`**）、再到以 `tsc` 編譯 **ES Module** 的 TypeScript，逐步看出「沒有建構工具時」手動步驟與限制；再與 Vite 提供的開發伺服器、模組解析與建置流程比較，會較容易掌握差異（上述皆與 **React + Vite** 預設的模組型別一致）。
 
 （細節仍以各前置單元內文為準，本段不另列重複連結。）
 
@@ -60,7 +61,7 @@
 
 ## 學習路徑建議（選讀）
 
-一條常見路線是：先完成 **前置** 四個單元的 README 與範例，再從 **01** 起依各章 **`主題.md` 的上一章／下一章** 往 **07** 走。主線編號未含「04」：與 npm／套件相關內容已併入上表 **[00 - Node.js 與 npm](00-Node.js與npm/README.md)**。
+一條常見路線是：先完成 **前置** 五個單元的 README 與範例，再從 **01** 起依各章 **`主題.md` 的上一章／下一章** 往 **07** 走。主線編號未含「04」：與 npm／套件相關內容已併入上表 **[00 - Node.js 與 npm](00-Node.js與npm/README.md)**。
 
 **08**、**09** 為深度單元，建議在 [03](03-TypeScript配置/主題.md)、[05](05-React核心概念/主題.md) 有基礎後再讀；**09** 請先完成 **05**。
 
