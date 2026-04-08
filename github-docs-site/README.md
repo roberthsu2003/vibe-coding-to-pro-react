@@ -144,3 +144,160 @@ npm run build
    - 點選 **Save** 儲存。
 4. **大功告成 🎉**：
    等待約 1~2 分鐘，重新整理頁面，就會看到上方出現部署成功的網址（例如 `https://<您的帳號>.github.io/<專案名稱>/`）。點選該網址即可看到您的網頁成品了！
+
+--- 
+
+## 使用githbu action自動部署
+
+
+使用 GitHub Actions 來自動執行 `npm install` 和 `npm run build`，並且自動將建置好的檔案部署到 GitHub Pages。這是目前非常主流且推薦的做法！
+
+專案是使用 **Vite** 建置的（根據您的 `package.json` 內容可以看出有 `vite build` 指令），設定起來非常簡單。以下是您可以如何完成設定的步驟：
+
+### 第一步：🚨 新手必看！準備部署前的兩大檔案檢查
+
+在貼上自動部署的設定檔前，**請務必檢查並修改您專案本身的兩個檔案**。因為每個人的專案名稱不同，如果不提早做對應，這一步最容易讓機器人打包失敗！
+
+#### 1. 檢查 `package.json` (確認專案有打包功能)
+GitHub 自動部署時會執行 `npm run build` 指令。請打開專案的 `package.json`，找到 `"scripts"` 的段落：
+- **一定要有** `"build"` 這一行（如果您是用 Vite 建立的專案，預設都會有）。
+
+```json
+{
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build", // ⬅️ 確保這裡有打包指令
+    "preview": "vite preview"
+  }
+}
+```
+
+#### 2. 修改 `vite.config.ts` (確認打包網址與資料夾對應)
+這是初學者最常失敗的地方！請打開您的 `vite.config.ts`，**請務必加入/檢查以下兩個設定**：
+
+1. **`base`**: 設定網頁資源的正確網址路徑，這裡要換成您的儲存庫 (Repository) 名稱。
+2. **`outDir`**: 指定打包出來的資料夾名稱（必須和後方自動部署 YAML 檔中的 `path:` 設定**完全一模一樣**！這份教學範例統一使用 `docs`）。
+
+```typescript
+// vite.config.ts
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
+
+export default defineConfig({
+  // ⚠️ 必改重點 1：替換成您在 GitHub 上的 repository 名稱
+  // 例如：您的專案網址是 github.com/HappyDay/my-timer-app，這裡就填 '/my-timer-app/'
+  base: '/<你的 repository 名稱>/', 
+  
+  plugins: [react()],
+  
+  build: {
+    // ⚠️ 必改重點 2：指定打包出 docs 資料夾 
+    // 這樣才能跟本文最後面 deploy.yml 設定檔裡面的 `path: './docs'` 對應起來，讓機器人找得到檔案！
+    outDir: 'docs', 
+  }
+})
+```
+> *(補充注意：如果您的 repository 名稱剛好就是 `<您的帳號>.github.io` 本身，那不需要加專案名稱，`base` 直接設定為 `'/'` 即可)*
+
+### 第二步：建立 GitHub Actions 工作流程檔案
+
+在您的專案根目錄下，建立資料夾 `.github/workflows/`，並在裡面新增一個檔案，例如叫做 `deploy.yml`。這個檔案會告訴 GitHub 什麼時候要執行什麼指令。
+
+檔案內容請貼上以下程式碼：
+
+```yaml
+# .github/workflows/deploy.yml
+name: Deploy static content to Pages
+
+on:
+  # 當有程式碼 push 到 main 分支時觸發
+  push:
+    branches: ['main'] # 如果您的主要分支叫 master，請改為 'master'
+
+# 設定權限以允許部署到 GitHub Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+# 只允許一個 concurrent 部署，避免衝突
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+
+jobs:
+  # 第一個工作：建置專案 (npm install & build)
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24 # 升級 Node.js 版本
+          cache: 'npm'     # 快取 npm 套件加速之後的建置
+          
+      - name: Install dependencies
+        run: npm ci # 使用 ci 可以確保根據 package-lock.json 完全復原依賴，比 install 更穩定
+        
+      - name: Build project
+        run: npm run build
+        
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          # 配合 vite.config.ts 的 outDir: 'docs' 設定，打包 docs 資料夾
+          path: './docs'
+
+  # 第二個工作：將剛剛建置好的檔案佈署至 GitHub Pages
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    needs: build
+    runs-on: ubuntu-latest
+    name: Deploy
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+```
+
+### 📋 deploy.yml 設定檔詳細說明
+
+以下表格詳細說明了上方 YAML 檔案中的每一個重要設定區塊。**請特別注意標示為「必填」與包含「重點」的項目，必須符合您的專案現況。**
+
+| YAML 設定階層 / 名稱 | 描述說明 | 是否必填 | 重點註記 ⚠️ |
+| :--- | :--- | :---: | :--- |
+| `name` | 工作流程名稱（顯示於 GitHub Actions 頁面上） | 否 | 建議保留，方便在後台上辨識用途。 |
+| `on` > `push.branches` | 觸發自動部署的條件與監聽的分支 | **是** | **⭐ 重要：** 預設監聽 `['main']`。如果您的主要分支名稱是 `master`，請務必將其改為 `['master']`！ |
+| `permissions` | 賦予 Action 腳本讀寫 GitHub Pages 的系統權限 | **是** | 絕對必要設定。若缺少 `contents`, `pages`, `id-token` 等權限將會部署失敗。 |
+| `env` | 設定環境變數 | 否 | 加入 `FORCE_JAVASCRIPT_ACTIONS_TO_NODE24`，強制 Action 使用 Node 24，避免舊版本警告。 |
+| `concurrency` | 併發控制。防止在短時間內連續 Push 造成多個部署任務打結。 | 否 | 建議保留。若有新推送會自動取消舊部署，確保最後能上線最新版。 |
+| `jobs` | 宣告各個工作階段。目前分為 `build` 與 `deploy` 兩階段。 | **是** | |
+| └ `build` | **工作階段一：專案建置** (專案打包出靜態網頁) | **是** | |
+| 　└ `runs-on` | 指定執行這項工作的雲端虛擬作業系統環境 | **是** | 使用官方預設的 `ubuntu-latest` 即可。 |
+| 　└ `steps` > `setup-node` | 建立專案需要的 Node.js 環境 | **是** | **已升級：** 範例指定 `node-version: 24`，並啟用 `npm` 快取。 |
+| 　└ `steps` > `npm ci` | 安裝相依套件 (功能類似 `npm install`) | **是** | 持續整合環境下建議使用 `npm ci` 來保證依賴版本的絕對一致。 |
+| 　└ `steps` > `npm run build` | 執行 Vite (或專案設定) 的建置指令 | **是** | 會根據專案 `package.json` 中的 `build` 腳本，編譯為靜態檔案。 |
+| 　└ `steps` > `upload-pages-artifact`| **⭐ 核心步驟：** 找到打包完成的靜態檔並上傳至快取 | **是** | **⭐ 最重點：`path: './docs'` 必須和您設定的打包目錄一致！** 如果改回原來的預設，請在此修改回 `./dist`。 |
+| └ `deploy` | **工作階段二：發行部署** (將打包好的網頁發布) | **是** | |
+| 　└ `needs: build` | 指定這一步驟必須「依賴」並等待 `build` 成功。| **是** | 沒加的話兩個階段會同時跑，導致找不到靜態資源而中途出錯。 |
+| 　└ `uses: deploy-pages` | 呼叫官方所撰寫的「發布至 GitHub Pages 工具」腳本 | **是** | 實際將網頁放置並發布的官方必備流程。 |
+
+<br>
+
+### 第三步：在 GitHub 上的 Pages 設定
+
+當您將這些程式碼與設定檔一起 Push 到 GitHub 之後，您還需要調整 Repository 的設定：
+1. 到您 GitHub 專案網頁，點選上方的 **Settings**。
+2. 點擊左側邊欄的 **Pages**。
+3. 在 **Build and deployment** > **Source** 的下拉式選單中，選擇 **GitHub Actions**。
+
+一旦這個設定完成，而且這個 `.yml` 檔案被上傳到 `main` 分支，GitHub 就會自動幫你執行 `npm install` 與 `build`，並把 `dist` 資料夾發布成網頁了！
+
