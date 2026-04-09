@@ -20,6 +20,9 @@ import cors from 'cors';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+// 💡 小知識：為什麼 `process` 不用 import 就能直接使用？
+// 因為 `process` 是 Node.js 內建的「全域物件 (Global Object)」。
+// 只要程式是運行在 Node.js 環境中，系統就會自動載入它，讓我們能隨時讀取系統環境變數。
 
 // Middleware 設置
 app.use(cors()); // 允許跨域請求 (測試階段非常方便)
