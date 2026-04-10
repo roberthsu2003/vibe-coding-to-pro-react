@@ -38,21 +38,53 @@
 | [08 - TypeScript 語法](08-TypeScript語法/主題.md) | 變數、函式、`interface`、泛型、聯合型別與窄化 | 6 |
 | [09 - React（進階）](09-React/主題.md) | `useRef`、效能 Hook、Context、自訂 Hook、表單進階、組合、`memo`／`key` 等 | 8 |
 
+---
+
 ### 實戰演練：AI 生成專案的架構升級與部署整合
+
+> 以下兩條「**實戰路徑**」皆以「**AI Studio 產生的 React 專案**」為起點，
+> 教你如何保護 API Key 並部署至雲端。
+> **請依序完成每條路徑中的步驟**，前一步是後一步的前置知識。
+
+---
+
+#### 🌐 其他基礎主題
 
 - [如何將靜態網頁發佈到 GitHub Pages 教學](./github-docs-site/README.md)
 
-- [寫給程式設計師：Vite 進階配置與優化 (模組別名、環境變數、跨域代理與打包切割)](./Vite進階與優化/主題.md)
+---
 
-- [AI Studio React專案下載後轉BFF + Express API Proxy（Render）](./BFF+Express_API_proxy/README.md) (附錄：使用 AI 編輯器一鍵轉換專案之 Prompt 模板)
+#### 路徑一：BFF + Express 代理（部署至 Render）
 
-- [AI Studio React 專案轉 Vercel Serverless 後端（保護 API Key、本機模擬、雲端部署）](./05-Serverless-Vercel後端/主題.md)
+> 適合需要長時間執行、複雜邏輯或獨立後端需求的專案。
+
+| 步驟 | 章節 | 說明 |
+|:----:|------|------|
+| **1** | [04 - BFF 與 Express 代理](./04-BFF與Express代理/主題.md) | 學習 BFF 概念、從零建立 Express 伺服器、設定 Vite proxy |
+| **2** | [Vite 進階配置與優化](./Vite進階與優化/主題.md) | 模組別名、環境變數、跨域代理、打包切割 |
+| **3** ✦ | [實戰：AI Studio 專案轉 BFF + Express（Render 部署）](./BFF+Express_API_proxy/README.md) | 用 AI 編輯器將 AI Studio React 專案一鍵轉換，附完整 Prompt 模板 |
+
+> ✦ 步驟 3 為綜合實戰，須先完成步驟 1、2 的觀念學習。
+
+---
+
+#### 路徑二：Vercel Serverless Functions（部署至 Vercel）
+
+> 適合輕量 AI 功能、無需維護伺服器、追求最低成本的專案。
+
+| 步驟 | 章節 | 說明 |
+|:----:|------|------|
+| **1** | [05 - Serverless Vercel 後端（學習步驟）](./05-Serverless-Vercel後端/主題.md) | 認識 Vercel CLI、建立 Serverless Function、Vite proxy 本機測試、雲端部署 |
+| **2** ✦ | [實戰：AI Studio 專案轉 Vercel Serverless（完整參考）](./Serverless_後端/README.md) | 完整轉換說明與 AI 編輯器 Prompt、部署驗證、常見錯誤排查 |
+
+> ✦ 步驟 2 為綜合實戰，須先完成步驟 1 的觀念學習。
+
+---
 
 **模組系統（與 React + Vite 一致）**
 
 - 本講義**可執行範例**一律採 **ES Module**：**`import`／`export`**，不使用 CommonJS 的 **`require`**／**`module.exports`**。
 - **瀏覽器**：以 `<script type="module" src="…">` 載入腳本（見 00-HTML/CSS/JS、00-HTML/CSS/Node/TS）。
 - **Node**：在 `package.json` 設定 **`"type": "module"`**（見 00-Node 之最小專案與練習專案）。
+
 ---
-
-
