@@ -46,7 +46,7 @@
 
 - [AI Studio React專案下載後轉BFF + Express API Proxy（Render）](./BFF+Express_API_proxy/README.md) (附錄：使用 AI 編輯器一鍵轉換專案之 Prompt 模板)
 
-- [AI Studio React專案下載後轉Serverless 後端](./Serverless_後端/)
+- [AI Studio React 專案轉 Vercel Serverless 後端（保護 API Key、本機模擬、雲端部署）](./05-Serverless-Vercel後端/主題.md)
 
 **模組系統（與 React + Vite 一致）**
 
