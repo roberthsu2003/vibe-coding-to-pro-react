@@ -12,6 +12,16 @@
 - ✅ 使用 Play CDN 載入 Tailwind，並辨識幾組常用 utility（間距、字級、顏色、Flex 簡單排版）
 - ✅ 知道 CDN 方式適合學習與原型，正式專案通常改走建置流程
 
+## 學習資源
+
+- [Tailwind CSS 官方網站](https://tailwindcss.com/)
+- [Tailwind CSS Play CDN](https://tailwindcss.com/docs/installation/play-cdn)
+- [Awesome Tailwindcss](https://github.com/aniftyco/awesome-tailwindcss)
+
+- [Tailwind components css]](https://tailwindcss.com/plus/ui-blocks#product-marketing)
+
+-[]
+
 ### 本章範例
 
 | 範例 | 說明 |
