@@ -307,6 +307,115 @@ proxy: {
 
 ---
 
+---
+
+## 進階：使用 `.env.local` 管理本機環境變數（推薦）
+
+在實務開發中，建議區分本機開發和正式環境的環境變數：
+
+- **`.env`**：提交到 Git，作為環境變數範本（無真實 Key）
+- **`.env.local`**：本機開發用，包含真實 Key，**不提交 Git**
+- **`.env.production`**（可選）：正式環境專用設定
+
+### 修改 `.gitignore`
+
+```bash
+# .gitignore
+node_modules/
+dist/
+.env.local              ← 本機環境變數（不上傳）
+.env.production.local   ← 正式環境本機副本（不上傳）
+!.env.example          ← 允許範本上傳
+.vercel
+```
+
+### 在本機使用 `.env.local`
+
+將你的真實 API Key 放在 `.env.local`：
+
+```bash
+# .env.local（不上傳 Git）
+GEMINI_API_KEY="你的真實 Key"
+```
+
+保留 `.env.example` 作為範本：
+
+```bash
+# .env.example（提交 Git）
+GEMINI_API_KEY="請填入您的 Gemini API Key"
+```
+
+> 💡 **優勢**  
+> 這樣做可以防止誤將真實 Key 提交到 GitHub，同時新團隊成員也能清楚知道需要哪些環境變數。
+
+---
+
+## 進階：新的 Vercel 配置方式 — `vercel.ts`（推薦）
+
+除了 `vercel.json`，Vercel 現在也支援 **`vercel.ts`**（TypeScript 配置），提供更多的靈活性和型別檢查。
+
+### 安裝依賴
+
+```bash
+npm install -D @vercel/config
+```
+
+### 建立 `vercel.ts`
+
+在專案根目錄建立 `vercel.ts`：
+
+```typescript
+// vercel.ts
+import { routes, type VercelConfig } from '@vercel/config/v1';
+
+export const config: VercelConfig = {
+  buildCommand: 'npm run build',
+  framework: 'vite',
+  
+  // 路由重寫：解決 React Router 刷新 404 問題
+  rewrites: [
+    routes.rewrite('/api/(.*)', '/api/$1'),
+    routes.rewrite('/(.*)', '/index.html'),
+  ],
+};
+```
+
+> **何時使用 `vercel.ts` vs `vercel.json`？**
+> - 簡單專案：使用 `vercel.json`
+> - 複雜邏輯（環境相關的配置、條件判斷）：使用 `vercel.ts`
+> - 新專案：推薦使用 `vercel.ts`
+
+---
+
+## 部署前的完整檢查清單
+
+在正式部署前，執行以下步驟確保一切就緒：
+
+```bash
+# ① 確認本機編譯無誤
+npm run build
+
+# ② 檢查 TypeScript 型別（如果有 typecheck 指令）
+npm run typecheck || npx tsc --noEmit
+
+# ③ 執行本機 Vercel 環境測試
+vercel dev
+
+# ④ 在瀏覽器測試所有功能（http://localhost:3000）
+# - 送出問題並確認收到 AI 回答
+# - 檢查 DevTools Network，確認 API Key 沒有外洩
+# - 測試重新整理頁面，確認路由沒有 404
+
+# ⑤ 檢查環境變數是否已設定在 Vercel
+vercel env list
+
+# ⑥ 檢查 Git 狀態，確認沒有誤提交敏感檔案
+git status
+# 應該看不到 .env.local、.env（只有 .env.example）
+```
+
+---
+
 ## ✅ 本步驟完成確認
 
 - [ ] `vite.config.ts` 已移除 `define` 區塊
@@ -314,6 +423,8 @@ proxy: {
 - [ ] 已在專案根目錄建立 `vercel.json` 設定路由重寫（rewrites）
 - [ ] 已成功利用單一個 `vercel dev` 指令啟動本機開發伺服器
 - [ ] Chrome DevTools Network 中看不到 API Key
+- [ ] （可選）已設定 `.env.local` 並更新 `.gitignore`
+- [ ] （可選）已建立 `vercel.ts` 配置檔（或使用 `vercel.json`）
 
 ---
 

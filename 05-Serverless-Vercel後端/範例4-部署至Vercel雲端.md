@@ -11,7 +11,53 @@
 
 ---
 
-## 部署前的準備工作
+## 部署前的完整檢查清單
+
+在執行任何部署指令前，請逐項確認以下事項：
+
+### ✅ 程式碼質量檢查
+
+```bash
+# 1. 確認 TypeScript 編譯無誤
+npm run build
+
+# 2. 確認沒有 TypeScript 型別錯誤
+npx tsc --noEmit
+
+# 3. 確認 ESLint 檢查通過（如有設定）
+npm run lint || echo "No lint script"
+```
+
+### ✅ 本機功能驗證
+
+```bash
+# 4. 啟動本機 Vercel 環境進行完整測試
+vercel dev
+
+# 然後在瀏覽器測試（http://localhost:3000）：
+# - 送出問題並確認收到 AI 回答 ✓
+# - 重新整理頁面，確認沒有 404 ✓
+# - 在 DevTools Network 頁籤確認看不到 API Key ✓
+```
+
+### ✅ Git 和環境配置檢查
+
+```bash
+# 5. 確認 .gitignore 正確設定
+cat .gitignore
+# 應包含：.env*、node_modules/、dist/、.vercel
+
+# 6. 確認沒有誤提交敏感檔案
+git status
+# 不應該出現 .env、.env.local、.vercel 等
+
+# 7. 確認 Vercel 配置存在（vercel.json 或 vercel.ts）
+ls -la vercel.json || ls -la vercel.ts
+
+# 8. 確認 .env.example 已更新
+cat .env.example
+# 應包含所有必要的環境變數（無真實值）
+```
 
 ### 確認 `.gitignore` 正確設定
 
@@ -21,14 +67,17 @@
 # .gitignore（應包含的內容）
 node_modules/
 dist/
-.env*        ← 保護所有 .env 開頭的檔案（含你的 API Key）
-!.env.example ← 但允許 .env.example 上傳（範本，無真實 Key）
-.vercel       ← Vercel CLI 產生的暫存設定，不需上傳
+.env*              ← 保護所有 .env 開頭的檔案（含你的 API Key）
+!.env.example      ← 但允許 .env.example 上傳（範本，無真實 Key）
+.vercel            ← Vercel CLI 產生的暫存設定，不需上傳
+.DS_Store          ← macOS 暫存檔
 ```
 
-### 確認 `vercel.json` 存在
+### 確認 `vercel.json` 或 `vercel.ts` 存在
 
-在範例 3 中我們介紹了使用 `vercel.json` 來幫助解析 `/api` 請求與防止 React 前端路由出現 404 問題。請確保你的專案根目錄擁有此設定檔：
+Vercel 需要知道如何路由你的請求。選擇其中一種設定方式：
+
+**方式 A：`vercel.json`（簡單）**
 
 ```json
 {
@@ -45,17 +94,46 @@ dist/
 }
 ```
 
+**方式 B：`vercel.ts`（推薦，需要 `@vercel/config`）**
+
+```typescript
+import { routes, type VercelConfig } from '@vercel/config/v1';
+
+export const config: VercelConfig = {
+  buildCommand: 'npm run build',
+  framework: 'vite',
+  rewrites: [
+    routes.rewrite('/api/(.*)', '/api/$1'),
+    routes.rewrite('/(.*)', '/index.html'),
+  ],
+};
+```
+
 ### 確認 `.env.example` 已更新
 
 更新 `.env.example`，讓其他人知道需要哪些環境變數：
 
 ```bash
-# .env.example
+# .env.example（提交 Git，無真實值）
 # Gemini 一句話問答 - GEMINI_API_KEY 只存在伺服器端
-# 請複製此檔案為 .env，並填入您的 Gemini API Key
-# 注意：.env 已加入 .gitignore，不會被上傳至 GitHub
+# 請複製此檔案為 .env.local，並填入您的 Gemini API Key
+# 注意：.env.local 已加入 .gitignore，不會被上傳至 GitHub
 
 GEMINI_API_KEY="請填入您的 Gemini API Key"
+```
+
+### 確認 `package.json` 的 Node.js 版本
+
+確認專案指定了適當的 Node.js 版本（推薦 18+）：
+
+```json
+{
+  "name": "my-serverless-app",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  ...
+}
 ```
 
 ---
@@ -197,6 +275,41 @@ https://gemini-qa-app.vercel.app
 - ✅ Request Headers 中**完全看不到** API Key
 - ✅ Response 只包含 `{ "text": "..." }`
 
+### 3. 查看 Serverless Function 執行日誌（排除問題用）
+
+如果遇到問題（例如 500 錯誤），可以查看函數的執行日誌：
+
+**方式 A：使用 Vercel 網頁介面**
+
+1. 進入 [Vercel Dashboard](https://vercel.com/dashboard)
+2. 點擊你的專案名稱
+3. 點擊 **Deployments** 頁籤
+4. 找到最新的部署，點擊進入
+5. 點擊 **Functions** 頁籤，選擇 `api/gemini`
+6. 查看 **Logs** 區域，看執行時的錯誤訊息
+
+**方式 B：使用 Vercel CLI（更即時）**
+
+```bash
+# 查看即時日誌
+vercel logs --follow
+
+# 或查看過去 1 小時的日誌
+vercel logs --since 1h
+
+# 查看特定函數的日誌
+vercel logs api/gemini
+```
+
+### 常見的部署錯誤及解決方案
+
+| 錯誤 | 原因 | 解決方案 |
+|---|---|---|
+| 500 Internal Server Error | 環境變數未設定或 API Key 無效 | 在 Vercel Settings → Environment Variables 確認 `GEMINI_API_KEY` 已設定 |
+| 404 Not Found | Serverless Function 未被正確部署 | 檢查 `api/gemini.ts` 是否在專案根目錄，檢查 `vercel.json` rewrites 設定 |
+| CORS 錯誤 | 前端和後端來源不同 | 這個不應該出現。確認你的前端呼叫的是 `/api/gemini`（相對路徑），而不是絕對 URL |
+| 請求超時 | Gemini API 呼叫太慢 | Vercel 的預設超時是 300 秒，應該足夠。檢查網路連線或 Gemini API 狀態 |
+
 ---
 
 ## 了解 Vercel 的自動部署（CI/CD）
@@ -216,6 +329,41 @@ Vercel 自動偵測到有新的 push
 ```
 
 **你完全不需要再手動執行任何部署指令！**
+
+---
+
+## 環境變數管理進階
+
+### 不同環境的環境變數
+
+Vercel 支援針對不同環境設定不同的環境變數：
+
+| 環境 | 用途 | 何時使用 |
+|---|---|---|
+| Production | 正式上線環境 | `main` 分支或手動 `vercel --prod` |
+| Preview | 預覽環境 | 其他分支或 PR 預覽 |
+| Development | 本機開發環境 | 本機 `vercel dev` |
+
+### 透過 CLI 管理環境變數
+
+```bash
+# 列出所有環境變數
+vercel env list
+
+# 拉取 Vercel 上的環境變數到本機 .env.local
+vercel env pull
+
+# 新增環境變數（互動式）
+vercel env add GEMINI_API_KEY
+
+# 移除環境變數
+vercel env remove GEMINI_API_KEY
+
+# 查看特定環境變數
+vercel env view GEMINI_API_KEY
+```
+
+> 💡 **提示**：`vercel env pull` 可以讓你快速將 Vercel 上的環境變數同步到本機，方便在不同電腦上開發。
 
 ---
 
@@ -323,14 +471,90 @@ Serverless 安全版（完成！）
 
 ---
 
+## 部署後的最佳實踐
+
+### 1. 監控部署狀態
+
+每次 `git push` 到 GitHub 後，Vercel 會自動進行部署。你可以：
+
+```bash
+# 查看部署歷史
+vercel deployments
+
+# 查看即時部署進度
+vercel logs --follow
+```
+
+### 2. 設定部署前檢查（保護 main 分支）
+
+建議在 GitHub 設定 Branch Protection Rule，要求所有 PR 都必須通過 CI 檢查才能合併：
+
+1. 進入 GitHub Repository Settings
+2. 點擊 **Branches**
+3. 在 **Branch protection rules** 點 **Add rule**
+4. Pattern name：填入 `main`
+5. 勾選 **Require status checks to pass before merging**
+6. 選擇 Vercel 的檢查項目
+7. 儲存
+
+這樣可以防止有問題的程式碼被合併到 main 分支。
+
+### 3. 回滾部署
+
+如果部署後發現有嚴重問題，可以快速回滾：
+
+```bash
+# 查看過去的部署
+vercel deployments
+
+# 重新部署舊版本（透過 Vercel Dashboard）
+# Settings → Deployments → 找到要回滾的版本 → Redeploy
+```
+
+---
+
+## 整合檢查清單：從本機到上線
+
+```
+✓ 本機開發與測試
+  └─ npm run build 確認編譯無誤
+  └─ npm run lint 確認型別檢查通過
+  └─ vercel dev 確認本機功能正常
+
+✓ 版本控制
+  └─ .gitignore 正確保護敏感檔案
+  └─ git push 上傳到 GitHub main
+
+✓ Vercel 設定
+  └─ Vercel 自動偵測並部署
+  └─ 設定環境變數 GEMINI_API_KEY
+  └─ 觸發重新部署以套用環境變數
+
+✓ 線上測試
+  └─ 訪問 Vercel URL，測試功能
+  └─ 查看 DevTools Network，確認安全性
+  └─ 檢查 Vercel Logs，確認無錯誤
+
+✓ 持續部署
+  └─ 未來 git push 會自動部署
+  └─ 監控部署狀態與日誌
+  └─ 設定 GitHub Branch Protection 保護品質
+```
+
+---
+
 ## ✅ 本步驟完成確認
 
-- [ ] `.gitignore` 已正確保護 `.env`
+- [ ] 已完成部署前的完整檢查清單
 - [ ] 已將程式碼推送到 GitHub
 - [ ] 已在 Vercel 匯入 Repository 並成功部署
 - [ ] 已在 Vercel 設定 `GEMINI_API_KEY` 環境變數
+- [ ] 已觸發重新部署以套用環境變數
 - [ ] 線上網站可以正常呼叫 AI 並顯示回應
+- [ ] 已驗證 DevTools 中看不到 API Key
+- [ ] 已查看過 Vercel Logs，確認函數執行無誤
 - [ ] （可選）已建立 `.github/workflows/ci.yml` 並推送到 GitHub
+- [ ] （可選）已設定 GitHub Branch Protection Rule
 
 ---
 

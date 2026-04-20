@@ -235,6 +235,48 @@ dist/
 
 ---
 
+---
+
+## 進階：測試 Serverless Function
+
+### 使用 curl 測試（本機開發或部署後）
+
+```bash
+# 本機開發時，確保已執行 vercel dev
+curl -X POST http://localhost:3001/api/gemini \
+  -H "Content-Type: application/json" \
+  -d '{"prompt":"TypeScript 是什麼？"}'
+
+# 預期回應：
+# {"text":"TypeScript 是 JavaScript 的超集，添加靜態型別檢查..."}
+```
+
+### 使用 Thunder Client 或 Postman（圖形化介面）
+
+1. 開啟 Thunder Client（VS Code 延伸） 或 Postman
+2. 建立新的 POST 請求
+3. URL：`http://localhost:3001/api/gemini`（本機）或 `https://你的域名.vercel.app/api/gemini`（上線後）
+4. Headers：`Content-Type: application/json`
+5. Body：
+   ```json
+   {
+     "prompt": "TypeScript 是什麼？"
+   }
+   ```
+6. 點擊 Send，檢查回應
+
+### 檢查項目
+
+| 項目 | 檢查方式 |
+|---|---|
+| 成功呼叫 | HTTP 狀態碼應為 200 ✓ |
+| 有回應內容 | 回應中應有 `text` 欄位 ✓ |
+| 沒有洩漏 Key | 整個請求過程中看不到 API Key ✓ |
+| 錯誤處理 | 傳送無效的 prompt 時，應回傳 400 錯誤 ✓ |
+| 驗證方法 | 使用 GET 方法時，應回傳 405 Method Not Allowed ✓ |
+
+---
+
 ## ✅ 本步驟完成確認
 
 完成後，你的目錄結構應該是這樣：
@@ -257,6 +299,7 @@ my-serverless-app/
 - [ ] `@google/genai` 已從 `dependencies` 移除
 - [ ] `.env` 已建立，填入真實的 API Key
 - [ ] `.gitignore` 已確認保護 `.env`
+- [ ] （可選）已用 curl 或 Postman 測試函數，確認能成功呼叫 Gemini API
 
 ---
 

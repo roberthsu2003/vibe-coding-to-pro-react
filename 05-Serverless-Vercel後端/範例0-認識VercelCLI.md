@@ -3,7 +3,29 @@
 ## 目標
 
 在開始修改程式碼之前，我們先來了解 **Vercel CLI** 是什麼，以及為什麼在開發 Serverless Function 時需要它。  
-本步驟不需要修改任何程式碼，只需要完成安裝與設定。
+本步驟不需要修改任何程式碼，只需要完成環境檢查、安裝與設定。
+
+---
+
+## 步驟 0：檢查系統環境
+
+### 檢查 Node.js 版本
+
+打開終端機，執行：
+
+```bash
+node --version
+npm --version
+```
+
+確保 Node.js 版本為 **18.0.0 或以上**（建議 20 LTS 或更新）：
+
+```
+node v20.11.0 或以上 ✅
+npm 10.2.4 或以上 ✅
+```
+
+如果版本過舊，請從 [nodejs.org](https://nodejs.org/) 下載並安裝最新版本。
 
 ---
 
@@ -47,8 +69,11 @@ vercel --version
 你應該會看到類似這樣的輸出：
 
 ```
-Vercel CLI 39.x.x
+Vercel CLI 51.x.x 或更新版本
 ```
+
+> 💡 **版本說明**  
+> 本教材基於 Vercel CLI 51.8.0+ 編寫。如果你的版本較舊（例如 39.x），建議執行 `npm install -g vercel@latest` 更新到最新版。
 
 > **💡 什麼是全域安裝（`-g`）？**  
 > 加上 `-g` 代表安裝到你的系統，而不是某個特定專案。  
@@ -141,6 +166,23 @@ my-serverless-app/
 ├── tsconfig.json
 └── vite.config.ts   ← 目前將 API Key 注入前端（待修改）
 ```
+
+### （選擇性）更新 `package.json` 的 Node.js 版本需求
+
+為了確保部署到 Vercel 時使用正確的 Node.js 版本，建議在 `package.json` 中加入 `engines` 欄位：
+
+```json
+{
+  "name": "my-serverless-app",
+  "version": "1.0.0",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  ...
+}
+```
+
+這樣可以告訴 Vercel 你的專案需要 Node.js 18 或更新的版本。
 
 ---
 
