@@ -160,7 +160,7 @@ const result = await ai.models.generateContent({ ... });
 ```typescript
 // ⚠️ 危險！這樣做會把 Key 編譯進前端的 JS bundle 中
 define: {
-  'process.env.GEMINI_API_KEY': JSON.stringify(process.env.GEMINI_API_KEY),
+  'process.env.GEMINI_API_KEY': JSON.stringify(env.GEMINI_API_KEY),
 },
 ```
 
@@ -177,45 +177,13 @@ define: {
    # 接著請用編輯器打開 .env 檔案，填寫 GEMINI_API_KEY=AIzaSy...
    ```
 
-2. **修改 `vite.config.ts` 讓 Vite 載入金鑰：**
-   預設的 `vite.config.ts` 中的 `process.env` 抓不到你剛寫入的 `.env` 變數。為了讓打包工具能把你的金鑰注入，請打開 `vite.config.ts`，加入 `loadEnv` 的寫法：
-   ```typescript
-   import { defineConfig, loadEnv } from 'vite';
-   import react from '@vitejs/plugin-react';
-   import tailwindcss from '@tailwindcss/vite';
-   import path from 'path';
-
-   export default defineConfig(({ mode }) => {
-     // 載入 .env 裡面的環境變數
-     const env = loadEnv(mode, process.cwd(), '');
-     
-     return {
-       plugins: [react(), tailwindcss()],
-       define: {
-         // ⚠️ 將金鑰注入，這裡正是外洩的元凶！
-         'process.env.GEMINI_API_KEY': JSON.stringify(env.GEMINI_API_KEY),
-       },
-       resolve: {
-         alias: {
-           '@': path.resolve(__dirname, '.'),
-         },
-       },
-       server: {
-         port: 3000,
-         host: '0.0.0.0',
-         hmr: env.DISABLE_HMR !== 'true',
-       },
-     };
-   });
-   ```
-
-3. **將專案打包（模擬產品上線）：**
+2. **將專案打包（模擬產品上線）：**
    在終端機執行前端的 production 打包指令：
    ```bash
    npm run build
    ```
    
-4. **親眼見證外洩 (一)：打包後的靜態檔案**
+3. **親眼見證外洩 (一)：打包後的靜態檔案**
    打包完成後，Vite 會生成一個 `dist` 資料夾（這就是即將部署上線的純前端檔案）。
    這時請你打開 `dist/assets`，找到裡面產生的 `index-xxxx.js` 檔案，用你的編輯器打開它。
    
@@ -223,7 +191,7 @@ define: {
    
    **有看到嗎？！你的 API Key 原封不動地變成了純文字，被寫死在這份即將公開給全世界的 JS 檔案裡面！** 
 
-5. **親眼見證外洩 (二)：開發環境的 DevTools**
+4. **親眼見證外洩 (二)：開發環境的 DevTools**
    不僅是打包後的檔案，連開發狀態下都很容易被看光光。
    請在終端機執行 `npm run dev`，啟動開發伺服器並在瀏覽器進入應用程式。
    接著，按下 `F12` 打開瀏覽器的開發者工具（DevTools），切換到 **Sources**（原始碼）面板。
