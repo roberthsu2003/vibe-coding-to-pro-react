@@ -4,7 +4,7 @@
 
 在這個範例中，我們要做兩件事：
 1. 建立 `api/` 資料夾，並在其中建立 Serverless Function `api/gemini.ts`
-2. 建立 `.env.local` 檔案，把 API Key 安全地存放在伺服器端
+2. 建立 `.env` 檔案，把 API Key 安全地存放在伺服器端
 
 完成後，前端的 Key 曝露問題將被根本解決！
 
@@ -196,19 +196,19 @@ npm install
 
 ---
 
-## 步驟 5：建立 `.env.local` 檔案（存放本機用的 API Key）
+## 步驟 5：建立 `.env` 檔案（存放本機用的 API Key）
 
-在專案**根目錄**建立 `.env.local` 檔案：
+在專案**根目錄**建立 `.env` 檔案：
 
 ```bash
-# 建立 .env.local 檔案（直接在編輯器新增或用指令）
-touch .env.local
+# 建立 .env 檔案（直接在編輯器新增或用指令）
+touch .env
 ```
 
-在 `.env.local` 中填入你的 Gemini API Key：
+在 `.env` 中填入你的 Gemini API Key：
 
 ```bash
-# .env.local
+# .env
 GEMINI_API_KEY="貼上你的 Gemini API Key"
 ```
 
@@ -217,7 +217,7 @@ GEMINI_API_KEY="貼上你的 Gemini API Key"
 
 ---
 
-## 步驟 6：確認 `.gitignore` 已保護 `.env.local`
+## 步驟 6：確認 `.gitignore` 已保護 `.env`
 
 打開 `.gitignore`，確認有以下內容（缺少的話請手動加入）：
 
@@ -230,7 +230,7 @@ dist/
 ```
 
 > ⚠️ **這一步非常重要！**  
-> `.env.local` 等檔案裡面有你的真實 API Key，絕對不能上傳到 GitHub。  
+> `.env` 裡面有你的真實 API Key，絕對不能上傳到 GitHub。  
 > `!.env.example` 是例外規則，允許 `.env.example` 上傳（因為它沒有真實 Key）。
 
 ---
@@ -337,9 +337,9 @@ my-serverless-app/
 │   └── gemini.ts     ← ✅ 新增
 ├── src/
 │   └── App.tsx        （下一步驟才修改）
-├── .env.local         ← ✅ 新增（含真實 Key，不上傳 Git）
+├── .env               ← ✅ 新增（含真實 Key，不上傳 Git）
 ├── .env.example       ← 範本檔案（上傳 Git）
-├── .gitignore         ← ✅ 確認保護 .env.local
+├── .gitignore         ← ✅ 確認保護 .env
 ├── package.json       ← ✅ 已移除 @google/genai，加入 @vercel/node
 └── vite.config.ts     （下一步驟才修改）
 ```
@@ -347,8 +347,8 @@ my-serverless-app/
 - [ ] `api/gemini.ts` 已建立，內容正確
 - [ ] `@vercel/node` 已安裝（在 `devDependencies`）
 - [ ] `@google/genai` 已從 `dependencies` 移除
-- [ ] `.env.local` 已建立，填入真實的 API Key
-- [ ] `.gitignore` 已確認保護 `.env.local`
+- [ ] `.env` 已建立，填入真實的 API Key
+- [ ] `.gitignore` 已確認保護 `.env`
 - [ ] （可選）已用 curl 或 Postman 測試函數，確認能成功呼叫 Gemini API
 
 ---

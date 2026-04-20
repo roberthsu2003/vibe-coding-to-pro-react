@@ -49,7 +49,7 @@ cat .gitignore
 
 # 6. 確認沒有誤提交敏感檔案
 git status
-# 不應該出現 .env、.env.local、.vercel 等
+# 不應該出現 .env、.vercel 等
 
 # 7. 確認 Vercel 配置存在（vercel.json 或 vercel.ts）
 ls -la vercel.json || ls -la vercel.ts
@@ -116,8 +116,8 @@ export const config: VercelConfig = {
 ```bash
 # .env.example（提交 Git，無真實值）
 # Gemini 一句話問答 - GEMINI_API_KEY 只存在伺服器端
-# 請複製此檔案為 .env.local，並填入您的 Gemini API Key
-# 注意：.env.local 已加入 .gitignore，不會被上傳至 GitHub
+# 請複製此檔案為 .env，並填入您的 Gemini API Key
+# 注意：.env 已加入 .gitignore，不會被上傳至 GitHub
 
 GEMINI_API_KEY="請填入您的 Gemini API Key"
 ```
@@ -350,7 +350,7 @@ Vercel 支援針對不同環境設定不同的環境變數：
 # 列出所有環境變數
 vercel env list
 
-# 拉取 Vercel 上的環境變數到本機 .env.local
+# 拉取 Vercel 上的環境變數到本機 .env
 vercel env pull
 
 # 新增環境變數（互動式）

@@ -266,9 +266,9 @@ Vercel CLI
 
 ### ❓ 出現 `500 Internal Server Error`
 
-**可能原因**：`.env.local` 檔案中的 `GEMINI_API_KEY` 未設定或填寫錯誤。  
+**可能原因**：`.env` 檔案中的 `GEMINI_API_KEY` 未設定或填寫錯誤。  
 **解決方法**：
-1. 確認 `.env.local` 檔案存在於專案根目錄
+1. 確認 `.env` 檔案存在於專案根目錄
 2. 確認 `GEMINI_API_KEY` 的值是正確的 Key（非空白、非 placeholder）
 3. 重新啟動 `vercel dev`
 
@@ -307,81 +307,6 @@ proxy: {
 
 ---
 
----
-
-## 進階：使用 `.env.local` 管理本機環境變數（推薦）
-
-在實務開發中，建議區分本機開發和正式環境的環境變數。這不是「`.env` 和 `.env.local` 都不提交」，而是：
-
-- **`.env`**：提交到 Git，作為環境變數範本（無真實 Key）
-- **`.env.local`**：本機開發用，包含真實 Key，**不提交 Git**
-- **`.env.production`**（可選）：正式環境專用設定
-
-### 為什麼 `.env` 可以提交到 Git？
-
-`.env` 是**環境變數清單**，不是**機密檔案**。提交 `.env` 範本的好處：
-
-| 情況 | 新開發者體驗 | 安全性 | 維護性 |
-|------|-----------|--------|--------|
-| 都不提交 `.env` | ❌ 不知道需要哪些變數 | ✅ 安全 | ❌ 容易漏設定 |
-| `.env` 包含真實金鑰 | ✅ 直接可用 | ❌ 金鑰外洩 | ✅ 簡單 |
-| `.env`(範本) + `.env.local`(真實值) | ✅ 知道要設什麼 | ✅ 金鑰安全 | ✅ 清楚 |
-
-**實踐方案：`.env` 作為「配置清單」**
-
-```env
-# .env（可以提交）
-VITE_API_URL=http://localhost:3000
-GEMINI_API_KEY=YOUR_KEY_HERE           ← 佔位符，無真實值
-DB_HOST=localhost
-```
-
-新成員看到 `.env` 就知道：
-1. 需要哪些環境變數
-2. 預設值是什麼
-3. 本機應該在 `.env.local` 填入真實值
-
-### 修改 `.gitignore`
-
-```bash
-# .gitignore
-node_modules/
-dist/
-.env.local              ← 本機環境變數（包含真實金鑰，不上傳）
-.env.production.local   ← 正式環境本機副本（不上傳）
-.vercel
-```
-
-**`.env.local` 被 Git 忽略，所以本機的真實 API Key 永遠不會上傳到 GitHub。**
-
-### 在本機使用 `.env.local`
-
-```bash
-# .env.local（本機開發用，不上傳 Git）
-GEMINI_API_KEY="sk_live_abc123xyz..."  ← 你的真實金鑰
-```
-
-### 檢查清單
-
-```bash
-# ✅ 提交到 Git
-- .env（作為團隊範本）
-- 代碼檔案
-
-# ❌ 不提交到 Git（在 .gitignore）
-- .env.local（本機真實金鑰）
-- .env.production.local（正式環境金鑰）
-- node_modules/, dist/ 等
-```
-
-> 💡 **完整流程**
->
-> 1. **專案維護者**：建立 `.env` 作為範本，定義所有需要的環境變數名稱
-> 2. **新開發者**：`git clone` 後看到 `.env`，知道要設什麼，創建 `.env.local` 填入自己的金鑰
-> 3. **Git 自動忽略**：`.env.local` 在 `.gitignore` 中，金鑰永遠不會被上傳
-> 4. **結果**：開發者有真實金鑰可運行程式，但金鑰安全
-
----
 
 ## 進階：新的 Vercel 配置方式 — `vercel.ts`（推薦）
 
@@ -444,7 +369,7 @@ vercel env list
 
 # ⑥ 檢查 Git 狀態，確認沒有誤提交敏感檔案
 git status
-# 應該看不到 .env.local、.env（只有 .env.example）
+# 應該看不到 .env（只有 .env.example）
 ```
 
 ---
@@ -456,7 +381,6 @@ git status
 - [ ] 已在專案根目錄建立 `vercel.json` 設定路由重寫（rewrites）
 - [ ] 已成功利用單一個 `vercel dev` 指令啟動本機開發伺服器
 - [ ] Chrome DevTools Network 中看不到 API Key
-- [ ] （可選）已設定 `.env.local` 並更新 `.gitignore`
 - [ ] （可選）已建立 `vercel.ts` 配置檔（或使用 `vercel.json`）
 
 ---
