@@ -9,7 +9,9 @@
 但如果你現在執行 `npm run dev`，然後在瀏覽器送出問題，會發現**出現 404 錯誤**！
 
 這是因為 Vite Dev Server 只服務前端，它不知道 `/api/gemini` 在哪裡。  
-本範例將解決這個問題，讓你可以在本機完整測試整個功能。
+本範例將介紹兩種解決方案，讓你可以在本機完整測試整個功能：
+1. **傳統做法**：Vite Proxy 搭配雙伺服器（幫助理解底層運作）
+2. **最佳實務**：使用 `vercel dev` 一鍵啟動單一伺服器，並引入 `vercel.json` 設定檔
 
 ---
 
@@ -194,6 +196,65 @@ Response:
 
 ---
 
+## 🔥 升級做法：使用 Vercel CLI 單一啟動（推薦）
+
+剛才我們學習了如何啟動「兩個」伺服器來完成本機測試，這是為了讓你理解 proxy 的運作原理。
+但在實際開發中，**其實你只要開一個終端機就夠了！**
+
+Vercel 非常聰明，當你執行 `vercel dev` 時，它會自動偵測到你的專案是 Vite，進而自動：
+1. 在背景幫你啟動 Vite 開發伺服器
+2. 啟動 Serverless Function 模擬器
+3. 自動將 `/api` 開頭的請求導向後端，其餘所有請求導向 Vite 前端
+
+### 步驟 A：建立 `vercel.json` 檔（解決重新整理 404 問題）
+
+在使用單一伺服器或正式部署前，我們建議在專案根目錄加入一個 `vercel.json` 檔案。
+特別是當你的前端使用 React Router（例如使用者進入 `/about` 路徑），直接重新整理網頁時，Vercel 伺服器會找不到該路徑而回傳 404。
+
+在專案根目錄建立 `vercel.json`：
+
+```json
+{
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "/api/$1"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}
+```
+
+> **💡 這段設定的意思是：**
+> 1. 第一條規則：如果請求路徑開頭是 `/api/`，就導向到 `api/` 資料夾裡的 Serverless Function。
+> 2. 第二條規則：其他的任何路徑（例如 `/about` 或 `/`）全部倒回給 `index.html`，讓 Vite/React 的前端路由去接手處理。
+
+### 步驟 B：只執行 `vercel dev`
+
+現在，關閉剛才開啟的兩個伺服器（按 `Ctrl + C`）。
+只需要開啟**一個**終端機，執行：
+
+```bash
+vercel dev
+```
+
+你會看到類似如下的輸出：
+
+```
+Vercel CLI
+> Ready! Available at http://localhost:3000
+> Running Dev Command "npm run dev"
+> Vite is starting...
+```
+
+這時候，你只需要連線至 `http://localhost:3000`，就可以同時存取前端畫面，並且 `/api/gemini` 也隨時待命！
+再也不需要開兩個終端機視窗，開發體驗大幅提升！
+
+---
+
 ## 常見問題排查
 
 ### ❓ 出現 `404 Not Found` 錯誤
@@ -249,9 +310,9 @@ proxy: {
 ## ✅ 本步驟完成確認
 
 - [ ] `vite.config.ts` 已移除 `define` 區塊
-- [ ] `vite.config.ts` 已加入 `proxy` 設定，指向 port 3001
-- [ ] 可同時啟動兩個終端機（`npm run dev` + `vercel dev --listen 3001`）
-- [ ] 在瀏覽器成功收到 AI 回應
+- [ ] 了解 Vercel Proxy 的運作原理，並成功獲得 AI 回應
+- [ ] 已在專案根目錄建立 `vercel.json` 設定路由重寫（rewrites）
+- [ ] 已成功利用單一個 `vercel dev` 指令啟動本機開發伺服器
 - [ ] Chrome DevTools Network 中看不到 API Key
 
 ---

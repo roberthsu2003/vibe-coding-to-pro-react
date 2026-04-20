@@ -26,6 +26,25 @@ dist/
 .vercel       ← Vercel CLI 產生的暫存設定，不需上傳
 ```
 
+### 確認 `vercel.json` 存在
+
+在範例 3 中我們介紹了使用 `vercel.json` 來幫助解析 `/api` 請求與防止 React 前端路由出現 404 問題。請確保你的專案根目錄擁有此設定檔：
+
+```json
+{
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "/api/$1"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}
+```
+
 ### 確認 `.env.example` 已更新
 
 更新 `.env.example`，讓其他人知道需要哪些環境變數：
