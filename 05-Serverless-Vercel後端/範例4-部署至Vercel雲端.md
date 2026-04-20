@@ -107,9 +107,12 @@ vercel --prod
 
 ---
 
-## 方法二：透過 Vercel 網頁介面部署（推薦初學者）
+## 方法二：透過 GitHub 自動部署（CI/CD，推薦）
 
-### 步驟 1：將專案推送到 GitHub
+因為我們在上一個單元（範例 3）執行 `vercel dev` 時，Vercel 其實已經在你的帳號中建立了一個對應的「專案空殼」。
+所以最標準且推薦的做法，就是將這個專案空殼與你的 GitHub 綁定，達成未來的自動部署！
+
+### 步驟 1：將程式碼推送到 GitHub
 
 ```bash
 # 初始化 Git（如果還沒有）
@@ -119,50 +122,39 @@ git commit -m "feat: 轉換為 Vercel Serverless 架構"
 
 # 建立 GitHub Repository 並推送
 # （先在 GitHub 網站建立新的 Repository，再執行以下指令）
-git remote add origin https://github.com/你的帳號/gemini-qa-app.git
+git remote add origin https://github.com/你的帳號/你的專案名稱.git
 git push -u origin main
 ```
 
-### 步驟 2：在 Vercel 匯入 GitHub Repository
+### 步驟 2：在 Vercel 選擇剛建立的專案並綁定 GitHub
 
-1. 前往 [https://vercel.com/new](https://vercel.com/new)
-2. 點選「Import Git Repository」
-3. 授權 Vercel 存取你的 GitHub
-4. 找到剛剛推送的 Repository，點選「Import」
+1. 登入 [Vercel Dashboard](https://vercel.com/dashboard)
+2. 你會看到一個你在範例 3 時建立的專案卡片（例如 `gemini-qa-app`），**請點擊進入該專案**。
+3. 點選頁面右上角的 **Settings**（設定）。
+4. 在左側選單選擇 **Git**。
+5. 在「Connect to Git」區域，選擇你的 GitHub 帳號與剛剛推送的 Repository，點選 **Connect** 進行綁定。
 
-### 步驟 3：設定部署選項
+### 步驟 3：設定環境變數（最重要！）
 
-在 Vercel 的部署設定頁面：
+專案雖然跟 GitHub 綁定了，但它還沒有你的 API Key，這會導致伺服器報錯（500 錯誤）！
 
-```
-Framework Preset: Vite           ← Vercel 通常會自動偵測
-Build Command:    npm run build  ← 保持預設
-Output Directory: dist           ← 保持預設
-```
+1. 在同一個 Settings 頁面中，點擊左側的 **Environment Variables**。
+2. 新增你的 API Key：
+   ```text
+   Key:   GEMINI_API_KEY
+   Value: 貼上你的真實 Gemini API Key
+   ```
+3. 確認下方 Environments 都有勾選，點選 **Save** 儲存。
 
-> **不需要修改任何設定**，Vercel 會自動偵測到這是 Vite 專案。
+### 步驟 4：觸發第一次正式部署
 
-### 步驟 4：設定環境變數（最重要！）
+因為我們剛才才把環境變數填上去，為了確保專案吃到最新的變數，我們手動觸發一次重新部署：
 
-在部署設定頁面，找到「Environment Variables」區塊，新增：
+1. 點擊畫面上方的 **Deployments** 頁籤。
+2. 找到最新的那筆發布紀錄，點擊右邊的「三個點 (`⋮`)」圖示。
+3. 選擇 **Redeploy**（重新部署），按下確認。
 
-```
-Name:  GEMINI_API_KEY
-Value: 貼上你的真實 Gemini API Key
-```
-
-> ⚠️ **這步驟非常關鍵！**  
-> 如果沒有設定環境變數，Serverless Function 就無法讀取 Key，  
-> 所有 AI 請求都會回傳 500 錯誤。
-
-### 步驟 5：點選「Deploy」
-
-Vercel 會自動：
-1. 從 GitHub 下載你的程式碼
-2. 執行 `npm install`
-3. 執行 `npm run build`（產生前端靜態檔案）
-4. 部署靜態檔案到全球 CDN
-5. 部署 `api/gemini.ts` 為 Serverless Function
+Vercel 接著會自動下載 GitHub 的程式碼、安裝模組、打包前端靜態檔案，並將 `api/gemini.ts` 發布為 Serverless Function，只需等待幾十秒鐘即可！
 
 完成後，你會得到一個類似這樣的網址：
 
