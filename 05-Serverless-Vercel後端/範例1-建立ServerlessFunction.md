@@ -239,10 +239,34 @@ dist/
 
 ## 進階：測試 Serverless Function
 
-### 使用 curl 測試（本機開發或部署後）
+在測試這支 Serverless API 前，我們必須先啟動 Vercel 開發用伺服器。
+
+### 測試步驟 A：啟動 Vercel 開發伺服器
+
+請在專案的終端機執行以下指令：
 
 ```bash
-# 本機開發時，確保已執行 vercel dev
+vercel dev --listen 3001
+```
+
+<details open>
+<summary>💡 `vercel dev` 是做什麼的？為什麼用 3001 port？</summary>
+
+- **它是什麼**：你的本機電腦預設並不理解什麼是 Serverless Function。`vercel dev` 的作用就是在你電腦上**模擬建立一個 Vercel 雲端環境**，它會動態編譯並執行 `api/gemini.ts`，讓它變成一支可以接參數的真實 API。
+- **為什麼指定 `--listen 3001` port？**：預設情況下，`vercel dev` 和很多前端框架（像是 React/Vite）都喜歡占用預設的 `3000` port。為了把「未來的前端 Vite 伺服器」跟現在這台「Vercel 後端模擬器」區分開來，我們手動把它跑在無人使用的 `3001` port 上，以避免未來的衝突。
+</details>
+
+當終端機顯示 `Ready! Available at http://localhost:3001` 時，代表啟動成功。請讓它保持運作，**開啟另一個新的終端機視窗** 來進行後續測試。
+
+---
+
+### 測試步驟 B：發送測試請求
+
+#### 方法 1：使用 curl（指令列測試）
+
+在第二個終端機視窗執行：
+
+```bash
 curl -X POST http://localhost:3001/api/gemini \
   -H "Content-Type: application/json" \
   -d '{"prompt":"TypeScript 是什麼？"}'
@@ -251,7 +275,7 @@ curl -X POST http://localhost:3001/api/gemini \
 # {"text":"TypeScript 是 JavaScript 的超集，添加靜態型別檢查..."}
 ```
 
-### 使用 Thunder Client 或 Postman（圖形化介面）
+#### 方法 2：使用 Thunder Client 或 Postman（圖形化介面測試）
 
 1. 開啟 Thunder Client（VS Code 延伸） 或 Postman
 2. 建立新的 POST 請求
@@ -265,7 +289,9 @@ curl -X POST http://localhost:3001/api/gemini \
    ```
 6. 點擊 Send，檢查回應
 
-### 檢查項目
+---
+
+### 測試步驟 C：檢查驗證結果
 
 | 項目 | 檢查方式 |
 |---|---|
