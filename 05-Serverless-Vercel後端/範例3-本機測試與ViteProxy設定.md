@@ -266,9 +266,9 @@ Vercel CLI
 
 ### ❓ 出現 `500 Internal Server Error`
 
-**可能原因**：`.env` 檔案中的 `GEMINI_API_KEY` 未設定或填寫錯誤。  
+**可能原因**：`.env.local` 檔案中的 `GEMINI_API_KEY` 未設定或填寫錯誤。  
 **解決方法**：
-1. 確認 `.env` 檔案存在於專案根目錄
+1. 確認 `.env.local` 檔案存在於專案根目錄
 2. 確認 `GEMINI_API_KEY` 的值是正確的 Key（非空白、非 placeholder）
 3. 重新啟動 `vercel dev`
 

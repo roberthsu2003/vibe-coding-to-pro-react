@@ -224,10 +224,10 @@ define: {
 為了讓你深刻了解這個問題的嚴重性，我們來實際測試一下：
 
 1. **設定環境變數：** 
-   將 `my-serverless-app` 目錄下的 `.env.example` 複製一份並命名為 `.env`，然後在裡面填入你自己的 [Google Gemini API Key](https://aistudio.google.com/)。
+   將 `my-serverless-app` 目錄下的 `.env.example` 複製一份並命名為 `.env.local`，然後在裡面填入你自己的 [Google Gemini API Key](https://aistudio.google.com/)。
    ```bash
-   cp .env.example .env
-   # 接著請用編輯器打開 .env 檔案，填寫 GEMINI_API_KEY=AIzaSy...
+   cp .env.example .env.local
+   # 接著請用編輯器打開 .env.local 檔案，填寫 GEMINI_API_KEY=AIzaSy...
    ```
 
 2. **將專案打包（模擬產品上線）：**
