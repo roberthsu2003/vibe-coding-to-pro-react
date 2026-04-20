@@ -256,7 +256,28 @@ vercel dev --listen 3001
 - **為什麼指定 `--listen 3001` port？**：預設情況下，`vercel dev` 和很多前端框架（像是 React/Vite）都喜歡占用預設的 `3000` port。為了把「未來的前端 Vite 伺服器」跟現在這台「Vercel 後端模擬器」區分開來，我們手動把它跑在無人使用的 `3001` port 上，以避免未來的衝突。
 </details>
 
-當終端機顯示 `Ready! Available at http://localhost:3001` 時，代表啟動成功。請讓它保持運作，**開啟另一個新的終端機視窗** 來進行後續測試。
+### 👉 第一次執行的互動式問答與「預期中的紅字錯誤」
+
+如果你是**第一次**在這個資料夾執行 `vercel dev`，CLI 會互動式地問你一些問題，請按照以下方式回答：
+
+```text
+? Set up and develop "~/你的專案路徑"? [Y/n] → 輸入 Y (或直接按 Enter)
+? Which scope do you want to deploy to? → 選擇你的 Vercel 帳號
+? Link to existing project? [y/N] → 輸入 N (我們要建立新專案)
+? What's your project's name? → 直接按 Enter 使用預設名稱
+? In which directory is your code located? → 直接按 Enter (預設為 ./)
+```
+回答完畢後，它會建立一個 `.vercel` 隱藏資料夾將專案綁定到你的帳號。
+
+> 🚨 **重要：請忽略畫面上的 Vite 紅字錯誤！**
+> 
+> 啟動過程中，你的終端機**一定會噴出像這樣的紅字錯誤**：
+> `Failed to resolve import "@google/genai" from "src/App.tsx"`
+> 
+> **這是完全正常且預期中的！**
+> 因為我們在剛剛的步驟 4 移除了 `@google/genai` 套件，但我們**還沒有修改前端 `App.tsx`** 的程式碼（這是下個範例的工作）。Vite 前端啟動失敗完全不會影響我們 Vercel 後端 API 的獨立運作。
+
+當終端機最下方顯示 `Ready! Available at http://localhost:3001` 時，代表後端 API 啟動成功。請讓它保持運作放著不管它，**開啟另一個新的終端機視窗** 來進行後續測試。
 
 ---
 
