@@ -322,43 +322,6 @@ proxy: {
 ---
 
 
-## 進階：新的 Vercel 配置方式 — `vercel.ts`（推薦）
-
-除了 `vercel.json`，Vercel 現在也支援 **`vercel.ts`**（TypeScript 配置），提供更多的靈活性和型別檢查。
-
-### 安裝依賴
-
-```bash
-npm install -D @vercel/config
-```
-
-### 建立 `vercel.ts`
-
-在專案根目錄建立 `vercel.ts`：
-
-```typescript
-// vercel.ts
-import { routes, type VercelConfig } from '@vercel/config/v1';
-
-export const config: VercelConfig = {
-  buildCommand: 'npm run build',
-  framework: 'vite',
-  
-  // 路由重寫：解決 React Router 刷新 404 問題
-  rewrites: [
-    routes.rewrite('/api/(.*)', '/api/$1'),
-    routes.rewrite('/(.*)', '/index.html'),
-  ],
-};
-```
-
-> **何時使用 `vercel.ts` vs `vercel.json`？**
-> - 簡單專案：使用 `vercel.json`
-> - 複雜邏輯（環境相關的配置、條件判斷）：使用 `vercel.ts`
-> - 新專案：推薦使用 `vercel.ts`
-
----
-
 ## 部署前的完整檢查清單
 
 在正式部署前，執行以下步驟確保一切就緒：
@@ -395,7 +358,7 @@ git status
 - [ ] 已在專案根目錄建立 `vercel.json` 設定路由對應（routes）
 - [ ] 已成功利用單一個 `vercel dev` 指令啟動本機開發伺服器
 - [ ] Chrome DevTools Network 中看不到 API Key
-- [ ] （可選）已建立 `vercel.ts` 配置檔（或使用 `vercel.json`）
+
 
 ---
 

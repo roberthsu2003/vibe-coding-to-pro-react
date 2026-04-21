@@ -51,8 +51,8 @@ cat .gitignore
 git status
 # 不應該出現 .env、.vercel 等
 
-# 7. 確認 Vercel 配置存在（vercel.json 或 vercel.ts）
-ls -la vercel.json || ls -la vercel.ts
+# 7. 確認 Vercel 配置存在（vercel.json）
+ls -la vercel.json
 
 # 8. 確認 .env.example 已更新
 cat .env.example
@@ -73,11 +73,9 @@ dist/
 .DS_Store          ← macOS 暫存檔
 ```
 
-### 確認 `vercel.json` 或 `vercel.ts` 存在
+### 確認 `vercel.json` 存在
 
-Vercel 需要知道如何路由你的請求。選擇其中一種設定方式：
-
-**方式 A：`vercel.json`（簡單）**
+Vercel 需要知道如何路由你的請求。請確認專案根目錄有這個檔案：
 
 ```json
 {
@@ -102,21 +100,6 @@ Vercel 需要知道如何路由你的請求。選擇其中一種設定方式：
     }
   ]
 }
-```
-
-**方式 B：`vercel.ts`（推薦，需要 `@vercel/config`）**
-
-```typescript
-import { routes, type VercelConfig } from '@vercel/config/v1';
-
-export const config: VercelConfig = {
-  buildCommand: 'npm run build',
-  framework: 'vite',
-  rewrites: [
-    routes.rewrite('/api/(.*)', '/api/$1'),
-    routes.rewrite('/(.*)', '/index.html'),
-  ],
-};
 ```
 
 ### 確認 `.env.example` 已更新
