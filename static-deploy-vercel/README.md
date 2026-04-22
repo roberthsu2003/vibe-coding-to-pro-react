@@ -109,69 +109,21 @@ Vercel 系統非常聰明，它會自動偵測到您的專案是使用 **Vite** 
 3. 直接點擊下方的 **"Deploy"** 藍色按鈕。
 4. 等待大約幾十秒鐘，建置完成後您就會看到灑花特效！點擊畫面上的預覽截圖或 "Continue to Dashboard" 即可取得您專屬的公開網址。
 
----
+### 及時修改測試
 
-## 4. 部署方法二：使用 Vercel CLI 終端機指令
-
-如果您喜歡直接在開發環境（如 VS Code 的終端機）中操作，或者您的專案沒有放在 GitHub 上，也可以直接使用 Vercel 提供的手動命令列工具 (CLI) 來進行部署。
-
-### 4-1 安裝 Vercel CLI
-
-首先，您需要在電腦上全域安裝 Vercel CLI 工具：
-
-```bash
-npm install -g vercel
-```
-
-### 4-2 登入 Vercel 帳號
-
-安裝完成後，在終端機執行登入指令：
-
-```bash
-vercel login
-```
-
-終端機會提供幾個登入選項（例如：Continue with GitHub, Continue with Email 等），請使用鍵盤方向鍵選擇並按下 Enter。接著系統會自動開啟瀏覽器讓您完成登入授權。
-
-### 4-3 執行部署
-
-確認終端機目前位於您的專案根目錄中（例如 `dual-competition-timers/`），輸入以下指令開始部署：
-
-```bash
-vercel
-```
-
-接下來，終端機會詢問您幾個設定問題，您可以直接依照以下範例回答（多數選項直接按 Enter 使用預設值即可）：
+**修改的prompt**:
 
 ```text
-? Set up and deploy "~/your-project-path"? [Y/n] Y
-? Which scope do you want to deploy to? (選擇您的帳號)
-? Link to existing project? [y/N] N
-? What's your project's name? (輸入您想要的專案名稱，或直接 Enter 使用當前資料夾名稱)
-? In which directory is your code located? ./ (直接 Enter)
-? Auto-detected Project Settings (Vite):
-  - Build Command: vite build
-  - Development Command: vite
-  - Install Command: yarn install, pnpm install, npm install, or bun install
-  - Output Directory: dist
-? Want to modify these settings? [y/N] N
+請將整個專案的 UI 主題修改為深色模式 (Dark Theme)。
+請確保所有元件的背景顏色、文字顏色和邊框都能自動適應深色背景，提供良好且清晰的視覺體驗。
 ```
 
-回答完畢後，Vercel CLI 就會開始將您的專案原始碼上傳至雲端並進行建置。完成後，終端機會提供一串 **Preview URL (預覽網址)** 供您測試。
 
-### 4-4 發佈至正式環境 (Production)
 
-剛剛使用 `vercel` 指令部署的網址屬於 Preview（預覽）測試環境。如果您確認網頁各項功能皆運作正常，想要將其發佈為正式版本 (Production)，請執行以下指令：
 
-```bash
-vercel --prod
-```
 
-系統同樣會上傳並建置，完成後提供給您的網址將會是簡潔、不帶隨機雜湊碼的正式生產環境網址！
 
----
-
-## 5. 常見問題：使用 React Router 導致的 404 錯誤 (SPA 路由設定)
+## 4. 常見問題：使用 React Router 導致的 404 錯誤 (SPA 路由設定)
 
 如果您在專案中使用了 `react-router-dom` 的 `BrowserRouter`，您可能會發現：
 - 透過網頁內的連結跳轉頁面很正常。
