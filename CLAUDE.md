@@ -78,19 +78,24 @@ node --input-type=module <file.js>  # Run with --input-type=module flag
 ├── 00-HTML-CSS/                      # Static HTML/CSS (no JS)
 ├── 00-HTML-CSS-JavaScript/           # Static + vanilla JS
 ├── 00-HTML-CSS-Node-TypeScript/      # TypeScript → ES Module → browser
+├── 00-HTML-TailwindCSS/              # Tailwind CSS via Play CDN (no build step)
 ├── 00-Node.js與npm/                  # Node.js basics, ESM modules
 ├── 01-環境建置/                      # Setup, npm, project structure
 ├── 02-Vite入門/                      # Vite fundamentals
 ├── 03-TypeScript配置/                # TypeScript config, type basics
 ├── 04-BFF與Express代理/             # Express BFF + Vite proxy setup
-├── 05-React核心概念/examples/        # React hooks, state, props (Vite)
-├── 06-remix/examples/                # Remix / React Router 7 full-stack
-├── 07-Next.js/examples/              # Next.js 16 + App Router
+├── 05-React核心概念/examples/        # React hooks, state, props (single Vite project)
+├── 05-Serverless-Vercel後端/         # Vercel CLI + Serverless Functions learning steps
+├── 06-remix/examples/                # Remix / React Router 7 (single project)
+├── 07-Next.js/examples/              # Next.js 16 + App Router (single project)
 ├── 08-TypeScript語法/                # TS advanced (types, generics)
 ├── 09-React/                         # React advanced (useRef, Context, etc.)
 ├── Vite進階與優化/                   # Vite config, aliases, env vars, splitting
 ├── BFF+Express_API_proxy/            # Complete BFF → Render deployment
 ├── Serverless_後端/                  # Complete Serverless → Vercel deployment
+├── 10-Next.js-Vercel雲端原生/         # Route Handlers, Image, Edge, Blob, Redis (5 範例.md)
+├── static-deploy-vercel/             # Static site deployment to Vercel walkthrough
+├── Next.js_Vercel_雲端名片/          # Complete Next.js card app (practical project README)
 └── github-docs-site/                 # GitHub Pages static hosting example
 ```
 
