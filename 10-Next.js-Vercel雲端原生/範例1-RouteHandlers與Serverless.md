@@ -48,6 +48,33 @@ app/api/messages/route.ts   →  https://你的網域/api/messages（一個 Serv
 
 ---
 
+## Next.js 的角色：一個工具取代三個
+
+學習 Vite + React 時，若想開發全端應用，你需要組合多個工具：
+
+| 工具 | 負責的事 |
+|------|----------|
+| Vite | 打包前端程式碼 + HMR（存檔即更新） |
+| React | UI 元件 |
+| Vercel CLI（`vercel dev`） | 本機模擬 Serverless Function |
+
+**Next.js 把這三件事全部整合進來：**
+
+```
+Next.js = React + Turbopack（含 HMR）+ 內建伺服器（含模擬 Serverless）
+```
+
+所以你只需要執行 `npm run dev`，就能同時擁有：
+- ✅ 前端打包與 HMR（由 **Turbopack** 負責，不是 Vite）
+- ✅ 本機模擬 Route Handlers（不需要安裝 Vercel CLI）
+- ✅ 部署到 Vercel 也不需要在專案裡安裝任何額外套件
+
+> **💡 HMR（Hot Module Replacement）**  
+> 你修改程式碼存檔後，瀏覽器自動局部更新，不需要手動重新整理頁面。  
+> Turbopack 用 Rust 實作，HMR 速度比 Vite 更快。
+
+---
+
 ## 步驟 1：建立本章學習用的 Next.js 專案
 
 為本章建立一個獨立的練習專案，方便你自由嘗試各項功能。
@@ -266,6 +293,34 @@ export default async function HomePage() {
 ---
 
 ## 理解 Serverless Functions 的特性
+
+### 本機 vs 雲端：底層完全不同
+
+執行 `npm run dev` 時，**本機並沒有真正的 Serverless**。  
+Next.js 啟動的是一個**持續運行的 Node.js 伺服器**，只是讓你用相同的程式碼寫法開發：
+
+```
+本機 npm run dev
+┌──────────────────────────────────────┐
+│  Next.js 開發伺服器（一直在跑）      │
+│  /api/hello   ──┐                    │
+│  /api/messages──┤ 同一個程序處理     │
+│  /page.tsx    ──┘                    │
+└──────────────────────────────────────┘
+
+部署到 Vercel 後（真正的 Serverless）
+┌──────────────────────────────────────┐
+│  /api/hello    → Function A  ← 有請求才啟動 │
+│  /api/messages → Function B  ← 有請求才啟動 │
+│  /page.tsx     → 靜態 / SSR               │
+└──────────────────────────────────────┘
+```
+
+程式碼寫法完全相同，但執行機制不同：本機是「持續待命」，Vercel 是「按需啟動」。
+
+---
+
+### Serverless Function 的生命週期
 
 在結束本範例前，有一件事很重要——理解 Serverless Function 的生命週期：
 
