@@ -14,14 +14,15 @@
 ## 背景知識：Route Handlers 是什麼？
 
 在 Next.js 的 App Router 中，**Route Handlers** 是你撰寫後端 API 的方式。  
-只要在 `app/` 目錄下建立 `route.ts` 檔案，Next.js 就會把它當成 HTTP 端點。
+只要在 `src/app/` 目錄下建立 `route.ts` 檔案，Next.js 就會把它當成 HTTP 端點。
 
 ```
-app/
-├── page.tsx              ← 頁面（回傳 HTML）
-└── api/
-    └── hello/
-        └── route.ts      ← Route Handler（回傳 JSON、處理請求）
+src/
+└── app/
+    ├── page.tsx              ← 頁面（回傳 HTML）
+    └── api/
+        └── hello/
+            └── route.ts      ← Route Handler（回傳 JSON、處理請求）
 ```
 
 ### 與舊版 Pages Router 的差異
@@ -33,6 +34,8 @@ app/
 | HTTP 方法 | `req.method === 'POST'` | 匯出具名函式 `export async function POST()` |
 | 執行環境 | Node.js | Node.js（預設），可切換 Edge |
 
+> App Router（Next.js 新版路由架構）的 Route Handlers（路由處理函式）使用 Web 標準的 `Request` / `Response`，所以前端呼叫 API 與後端處理 API 的概念會更一致。你不用同時記一套前端 `fetch()` 寫法、另一套後端 `req` / `res` 寫法，先掌握 Web 標準這一套即可。
+
 ### Vercel 的自動對應
 
 部署到 Vercel 後：
@@ -41,6 +44,8 @@ app/
 app/api/hello/route.ts      →  https://你的網域/api/hello  （一個 Serverless Function）
 app/api/messages/route.ts   →  https://你的網域/api/messages（一個 Serverless Function）
 ```
+
+> 檔案名稱一定要是 `route.ts`。在 App Router（Next.js 新版路由架構）中，Next.js 會用資料夾名稱決定網址路徑，用 `route.ts` 這個固定檔名辨識它是 API 端點。
 
 > **💡 為什麼這很重要？**  
 > 每個 Route Handler 都是獨立的 Serverless Function：有人呼叫才啟動，用完即釋放。  

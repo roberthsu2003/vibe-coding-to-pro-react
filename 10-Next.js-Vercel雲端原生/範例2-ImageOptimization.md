@@ -36,13 +36,13 @@ WebP 格式 + 適合螢幕的尺寸 (200KB)
 
 ## 步驟 1：直接體驗兩者差異
 
-在 `src/app/page.tsx` 中，並排比較 `<img>` 和 `<Image>`：
+本範例使用獨立頁面，避免覆蓋其他範例共用的首頁。請建立 `src/app/image-demo/page.tsx`，並在裡面並排比較 `<img>` 和 `<Image>`：
 
 ```typescript
-// src/app/page.tsx
+// src/app/image-demo/page.tsx
 import Image from 'next/image';
 
-export default function HomePage() {
+export default function ImageDemoPage() {
   return (
     <main className="p-8">
       <h1 className="text-2xl font-bold mb-8">圖片優化比較</h1>
@@ -98,10 +98,10 @@ export default function HomePage() {
 2. 在頁面中使用：
 
 ```typescript
-// src/app/page.tsx
+// src/app/image-demo/page.tsx
 import Image from 'next/image';
 
-export default function HomePage() {
+export default function ImageDemoPage() {
   return (
     <main className="p-8">
       <h1 className="text-2xl font-bold mb-4">我的個人頁面</h1>
@@ -176,10 +176,10 @@ export default nextConfig;
 當圖片容器的尺寸由 CSS 決定（而非固定 `width`/`height`）時，使用 `fill` 屬性：
 
 ```typescript
-// src/app/page.tsx
+// src/app/image-demo/page.tsx
 import Image from 'next/image';
 
-export default function HomePage() {
+export default function ImageDemoPage() {
   return (
     <main className="p-8">
       {/* Banner 圖片：寬度固定 100%，高度由 aspect-ratio 決定 */}
@@ -232,7 +232,7 @@ sizes="(max-width: 768px) 100vw, 50vw"
 
 ## 步驟 5：在瀏覽器開發工具中驗證優化效果
 
-1. 打開 `http://localhost:3000`
+1. 打開 `http://localhost:3000/image-demo`
 2. 開啟 Chrome DevTools → Network → 篩選 `Img`
 3. 點擊圖片的請求，查看 **Response Headers**：
 
