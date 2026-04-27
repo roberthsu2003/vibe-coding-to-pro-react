@@ -95,13 +95,13 @@ export default function ImageDemoPage() {
 
 1. 把任一張圖片複製到 `public/avatar.jpg`（可從網路下載任意 jpg）
 
-2. 在頁面中使用：
+2. 建立另一個獨立頁面 `src/app/local-image/page.tsx`，避免覆蓋步驟 1 的 `image-demo` 頁面：
 
 ```typescript
-// src/app/image-demo/page.tsx
+// src/app/local-image/page.tsx
 import Image from 'next/image';
 
-export default function ImageDemoPage() {
+export default function LocalImagePage() {
   return (
     <main className="p-8">
       <h1 className="text-2xl font-bold mb-4">我的個人頁面</h1>
