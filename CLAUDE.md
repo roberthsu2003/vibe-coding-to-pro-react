@@ -93,7 +93,7 @@ node --input-type=module <file.js>  # Run with --input-type=module flag
 ├── Vite進階與優化/                   # Vite config, aliases, env vars, splitting
 ├── BFF+Express_API_proxy/            # Complete BFF → Render deployment
 ├── Serverless_後端/                  # Complete Serverless → Vercel deployment
-├── 10-Next.js-Vercel雲端原生/         # Route Handlers, Image, Edge, Blob, Redis (5 範例.md)
+├── 10-Next.js-Vercel生態系與雲端服務整合/ # Route Handlers, Image, Edge, Blob, Redis (5 範例.md)
 ├── static-deploy-vercel/             # Static site deployment to Vercel walkthrough
 ├── Next.js_Vercel_雲端名片/          # Complete Next.js card app (practical project README)
 └── github-docs-site/                 # GitHub Pages static hosting example

@@ -89,7 +89,7 @@
 
 | 步驟 | 章節 | 說明 |
 |:----:|------|------|
-| **1** | [10 - Next.js × Vercel 雲端原生（學習步驟）](./10-Next.js-Vercel雲端原生/主題.md) | Route Handlers、Image Optimization、Edge Runtime、Vercel Blob、Upstash Redis |
+| **1** | [10 - Next.js × Vercel 生態系與雲端服務整合](./10-Next.js-Vercel生態系與雲端服務整合/主題.md) | Route Handlers、Image Optimization、Edge Runtime、Vercel Blob、Upstash Redis |
 | **2** ✦ | [實戰：打造極簡個人社交名片](./Next.js_Vercel_雲端名片/README.md) | 整合五項功能建立完整 Next.js 應用程式並部署 |
 
 > ✦ 步驟 2 為綜合實戰，須先完成步驟 1 的五個範例。

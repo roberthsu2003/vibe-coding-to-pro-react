@@ -43,11 +43,13 @@
 
 在開始本實戰之前，請確認你已完成：
 
-- [ ] [範例 1](../10-Next.js-Vercel雲端原生/範例1-RouteHandlers與Serverless.md)：Route Handlers
-- [ ] [範例 2](../10-Next.js-Vercel雲端原生/範例2-ImageOptimization.md)：Image Optimization
-- [ ] [範例 3](../10-Next.js-Vercel雲端原生/範例3-EdgeRuntime.md)：Edge Runtime
-- [ ] [範例 4](../10-Next.js-Vercel雲端原生/範例4-VercelBlob.md)：Vercel Blob（已建立 Blob Store）
-- [ ] [範例 5](../10-Next.js-Vercel雲端原生/範例5-UpstashRedis計數與限流.md)：Upstash Redis（已建立 Redis）
+- [ ] [範例 1](../10-Next.js-Vercel生態系與雲端服務整合/範例1-RouteHandlers與Serverless.md)：Route Handlers
+- [ ] [範例 2](../10-Next.js-Vercel生態系與雲端服務整合/範例2-ImageOptimization.md)：Image Optimization
+- [ ] [範例 3](../10-Next.js-Vercel生態系與雲端服務整合/範例3-EdgeRuntime.md)：Edge Runtime
+- [ ] [範例 4](../10-Next.js-Vercel生態系與雲端服務整合/範例4-VercelBlob.md)：Vercel Blob（已建立 Blob Store）
+- [ ] [範例 5](../10-Next.js-Vercel生態系與雲端服務整合/範例5-UpstashRedis計數與限流.md)：Upstash Redis（已建立 Redis）
+- [ ] [範例 6](../10-Next.js-Vercel生態系與雲端服務整合/範例6-SupabaseDatabase.md)：Supabase Database（已建立專案與資料表）
+- [ ] [範例 7](../10-Next.js-Vercel生態系與雲端服務整合/範例7-SupabaseStorage.md)：Supabase Storage（已建立 Bucket）
 
 ---
 
@@ -530,4 +532,4 @@ A：確認 `next.config.ts` 的 `remotePatterns` 已加入 `*.public.blob.vercel
 
 ---
 
-[回到第 10 章主題](../10-Next.js-Vercel雲端原生/主題.md)
+[回到第 10 章主題](../10-Next.js-Vercel生態系與雲端服務整合/主題.md)
