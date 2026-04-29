@@ -17,9 +17,11 @@
 
 ---
 
-## 步驟 1：在 Supabase 建立 Storage Bucket
+## 步驟 1：建立 Supabase Storage Bucket
 
-1. 登入 Supabase，進入你剛才建立的 `nextjs-demo` 專案。
+因為我們在範例 6 已經透過 Vercel 建立了 Supabase 專案，現在可以直接從 Vercel 進入它的管理後台：
+
+1. 在 Vercel 專案的 **Storage** 頁面，點擊你的 Supabase 資料庫，會自動進入 **Supabase Studio**。
 2. 點選左側選單的 **Storage**。
 3. 點選 **New Bucket**。
 4. Name 輸入 `avatars`。

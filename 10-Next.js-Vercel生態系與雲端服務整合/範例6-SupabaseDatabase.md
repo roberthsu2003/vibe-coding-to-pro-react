@@ -18,25 +18,30 @@
 
 ---
 
-## 步驟 1：建立 Supabase 專案與資料表
+## 步驟 1：透過 Vercel 建立 Supabase 專案與資料表
 
-1. **登入 Supabase**：前往 [supabase.com](https://supabase.com) 並登入或註冊。
-2. **建立專案 (New Project)**：
-   - 選擇你的 Organization（如果沒有就建立一個）。
-   - 取名（例如 `nextjs-demo`）。
-   - 設定 Database Password（**請記住這組密碼**，雖然本範例用不到，但未來直連資料庫時會需要）。
-   - Region 選擇靠近你的地區（例如 `Tokyo`）。
-   - 點選 **Create new project**（建立過程約需 1-2 分鐘）。
-3. **建立資料表 (Table Editor)**：
-   - 在左側選單點選 **Table Editor**，點選 **Create a new table**。
-   - Name 輸入 `messages`。
-   - 勾選 **Enable Row Level Security (RLS)**。
-   - 預設會有 `id` (uuid) 和 `created_at` (timestamp)。
-   - 點選 **Add column**，新增一個欄位：Name 為 `content`，Type 為 `text`。
-   - 點選 **Save**。
-4. **新增假資料**：
-   - 在剛建立的 `messages` 資料表中，點選 **Insert row**。
-   - 在 `content` 欄位輸入「Hello Supabase!」，點選 **Save**。
+身為 Vercel 的深度整合夥伴，我們**不需要**手動去 Supabase 註冊和複製密鑰，一切都可以在 Vercel 介面內完成！
+
+1. **進入 Vercel 專案**：打開 [vercel.com](https://vercel.com) 並進入你的專案。
+2. **透過 Marketplace 安裝 Supabase**：
+   - 點選頂部選單的 **Storage**，點選 **Create Database**。
+   - 選擇 **Browse Marketplace**，找到 **Supabase** 並點選 **Add Integration**。
+   - 授權綁定你的 Vercel 帳號與當前專案。
+3. **在 Vercel 內建立 Supabase 專案**：
+   - 在整合畫面上，選擇 **Create a new project**。
+   - 取名（例如 `nextjs-demo`），設定密碼（**請務必記住這組密碼**），Region 選擇靠近你的地區（例如 `Tokyo`）。
+   - 點選建立。Vercel 會自動幫你把 `NEXT_PUBLIC_SUPABASE_URL` 與 `NEXT_PUBLIC_SUPABASE_ANON_KEY` 等環境變數寫入專案中！
+4. **拉取環境變數到本機**：
+   - 回到本機終端機執行：
+     ```bash
+     vercel env pull .env.local
+     ```
+5. **前往 Supabase Studio 建立資料表**：
+   - 從 Vercel 的 Storage 頁面點擊你的 Supabase 資料庫，會自動跳轉進入 **Supabase Studio (管理後台)**。
+   - 點選左側的 **Table Editor** -> **Create a new table**。
+   - Name 輸入 `messages`，勾選 **Enable Row Level Security (RLS)**。
+   - 新增一個欄位：Name 為 `content`，Type 為 `text`，點選 **Save**。
+   - 點選 **Insert row** 新增一筆假資料（例如 "Hello Supabase via Vercel!"）。
 
 ---
 
@@ -51,23 +56,15 @@
 
 ---
 
-## 步驟 3：在 Next.js 取得 API Keys 並安裝套件
+## 步驟 3：安裝 Supabase 客戶端套件
 
-1. **取得 Keys**：
-   - 在 Supabase 專案左側底部的 **Project Settings** (齒輪圖示) -> **API**。
-   - 找到 `Project URL` 和 `Project API Keys` 中的 `anon` `public` key。
-2. **設定環境變數**：
-   - 在你的 Next.js 專案根目錄建立或開啟 `.env.local`。
-   - 加入以下內容（替換成你自己的 URL 和 Key）：
-     ```env
-     NEXT_PUBLIC_SUPABASE_URL=https://xxxx.supabase.co
-     NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1...
-     ```
-3. **安裝 Supabase JS 客戶端**：
-   在終端機執行：
-   ```bash
-   npm install @supabase/supabase-js
-   ```
+因為在步驟 1 我們已經透過 `vercel env pull` 自動把 `NEXT_PUBLIC_SUPABASE_URL` 與 `NEXT_PUBLIC_SUPABASE_ANON_KEY` 下載到 `.env.local` 中，所以我們不需要再手動去複製密鑰。
+
+現在只需要安裝 Supabase 的官方套件即可：
+
+```bash
+npm install @supabase/supabase-js
+```
 
 ---
 
