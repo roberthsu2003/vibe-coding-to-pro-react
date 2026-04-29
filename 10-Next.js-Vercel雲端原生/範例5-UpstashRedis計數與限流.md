@@ -1,65 +1,33 @@
-# 範例 5：Upstash Redis — 計數器與 Rate Limiting
+# 範例 5：Upstash Redis — Server Component 直接操作與限流
 
 ## 目標
 
-學會使用 **Upstash Redis**（透過 Vercel Marketplace 佈建）：
-1. 建立頁面瀏覽計數器（每次有人訪問，數字 +1）
-2. 建立 Rate Limiting（防止同一用戶在短時間內瘋狂呼叫 API）
+學會使用 **Upstash Redis**：
+1. **Server Component 直接存取**：跳過 API 層，直接在頁面元件中讀寫資料庫。
+2. **建立頁面瀏覽計數器**：每次頁面渲染，數字自動 +1。
+3. **實作 Rate Limiting (限流)**：防止同一用戶在短時間內過度重新整理。
 
 ---
 
-## 背景知識：什麼是 KV 儲存？
+## 背景知識：為什麼在 Next.js 中優先使用 Server Component 操作 Redis？
 
-**KV（Key-Value）儲存**就像一本超級字典：
+在傳統的 SPA（如純 React）或舊版 Next.js 中，我們必須寫一個 API (`/api/views`)，然後在前端 `fetch` 它。
 
-```
-"key"     →  "value"
-─────────────────────
-"visits"  →  "142"
-"user:1"  →  "logged-in"
-"rate:ip" →  "5"          ← 這個 IP 已呼叫 5 次
-```
-
-Redis 是最流行的 KV 資料庫，它把資料存在**記憶體**中，讀寫速度比傳統資料庫快 10～100 倍。
-
-### 為什麼不用 Vercel KV？
-
-Vercel 曾經提供 `@vercel/kv` 套件，但這個產品已**停售（sunset）**，不再接受新用戶。
-
-現在 Vercel Marketplace 整合了 **Upstash Redis** 作為官方推薦的替代方案：
-- 透過 Vercel Marketplace 一鍵建立，環境變數自動注入
-- 使用 `@upstash/redis` 套件
-- 免費方案：10,000 次請求/天
+但在 **App Router (Server Components)** 中：
+- **效能更好**：伺服器直接連線 Redis，省去了一次瀏覽器到 API 的 HTTP 請求。
+- **更安全**：Redis 的 Token 永遠留在伺服器端，不會暴露給瀏覽器。
+- **代碼更簡潔**：不再需要為了讀取一個數字而寫一堆 API 路由。
 
 ---
 
 ## 步驟 1：在 Vercel Marketplace 佈建 Upstash Redis
 
-1. 前往 [vercel.com](https://vercel.com) → 登入 → 選擇 `cloud-features` 專案
-2. 點選上方 **Storage** 分頁
-3. 點選 **Create Database** → 選擇 **Upstash for Redis**
-4. 選擇地區（建議選 **AP Northeast 1** — 最靠近台灣）
-5. 取名（例如 `my-redis`）→ 點選 **Create**
-
-建立完成後，Vercel 會自動將以下環境變數注入到你的專案：
-
-```bash
-UPSTASH_REDIS_REST_URL=https://xxxx.upstash.io
-UPSTASH_REDIS_REST_TOKEN=xxxxxxxxxxxxxxxxxxxxxxxxxx
-```
-
-### 拉取環境變數到本機
+1. 前往 [vercel.com](https://vercel.com) → 登入 → 選擇你的專案。
+2. 點選上方 **Storage** 分頁 → **Create Database** → 選擇 **Upstash for Redis**。
+3. 建立完成後，執行以下指令拉取環境變數到本機：
 
 ```bash
 vercel env pull .env.local
-```
-
-確認 `.env.local` 中出現了兩個 Upstash 的環境變數：
-
-```bash
-grep UPSTASH .env.local
-# UPSTASH_REDIS_REST_URL=https://...
-# UPSTASH_REDIS_REST_TOKEN=...
 ```
 
 ---
@@ -74,230 +42,89 @@ npm install @upstash/redis
 
 ## 步驟 3：建立 Redis 工具函式
 
-在 `src/lib/` 目錄下建立 Redis 客戶端，方便在多個地方重複使用：
-
-```bash
-mkdir -p src/lib
-```
-
-建立 `src/lib/redis.ts`：
+在 `src/lib/redis.ts` 建立客戶端：
 
 ```typescript
 // src/lib/redis.ts
 import { Redis } from '@upstash/redis';
 
-// 從環境變數建立 Redis 客戶端
-// Redis.fromEnv() 會自動讀取 UPSTASH_REDIS_REST_URL 和 UPSTASH_REDIS_REST_TOKEN
+// 自動讀取 UPSTASH_REDIS_REST_URL 和 UPSTASH_REDIS_REST_TOKEN
 export const redis = Redis.fromEnv();
 ```
 
-> **💡 為什麼要獨立一個檔案？**  
-> `redis.ts` 是伺服器端共用工具，Route Handler（路由處理函式）、Server Component（伺服器元件）、Server Action（伺服器動作）都可以匯入使用。  
-> 獨立一個 `redis.ts` 並匯出，讓 Node.js（伺服器端 JavaScript 執行環境）的模組快取重複利用同一個實例。
-
 ---
 
-## 步驟 4：建立頁面瀏覽計數器 API
+## 步驟 4：在 Server Component 直接實作計數與限流
 
-建立 `src/app/api/views/route.ts`：
+我們不再建立 `api/` 路由，直接在頁面元件中實作所有邏輯。
 
-```bash
-mkdir -p src/app/api/views
-```
-
-> 這個 Route Handler 是示範「如果你需要一個可被 HTTP（超文字傳輸協定）呼叫的計數器 API（應用程式介面），可以這樣寫」。  
-> 但如果只是自己的 Server Component 要讀寫 Redis，不需要先呼叫自己的 `/api/views`，可以直接匯入 `redis` 工具函式。
-
-```typescript
-// src/app/api/views/route.ts
-import { redis } from '../../../lib/redis';
-
-// 計數器的 Key 名稱（在 Redis 中的鍵）
-const VIEWS_KEY = 'page:views';
-
-// GET：取得目前瀏覽次數
-export async function GET() {
-  // get() 取得 Key 的值；如果 Key 不存在，回傳 null
-  const views = await redis.get<number>(VIEWS_KEY);
-
-  return Response.json({
-    views: views ?? 0,  // null 時顯示 0
-  });
-}
-
-// POST：將瀏覽次數 +1，並回傳新的數字
-export async function POST() {
-  // incr() 是 Redis 的原子操作：將 Key 的值 +1 並回傳新值
-  // 如果 Key 不存在，自動從 0 開始計數
-  // 「原子操作」的意思是：即使有 1000 個請求同時到達，每次 +1 都保證不會遺失
-  const newViews = await redis.incr(VIEWS_KEY);
-
-  return Response.json({
-    views: newViews,
-  });
-}
-```
-
-### 關鍵概念：`incr()` 的原子性
-
-```
-同時 1000 個請求呼叫 POST /api/views
-↓
-Redis incr() 逐一執行（原子操作）
-↓
-最終結果：正確增加 1000 次（不會因為並發而遺失）
-```
-
-相比之下，用普通變數 `count++` 在高並發下會發生 Race Condition（多個操作同時讀取舊值，寫回時互相覆蓋）。
-
----
-
-## 步驟 5：在頁面中顯示瀏覽次數
-
-建立 `src/app/counter/page.tsx`，讓頁面每次被訪問時自動計數。
-
-這裡故意示範 **Server Component 直接使用 Redis**：因為頁面本身就在伺服器端執行，不需要再 `fetch('/api/views')` 呼叫自己的 API。
-
-```bash
-mkdir -p src/app/counter
-```
+建立 `src/app/counter/page.tsx`：
 
 ```typescript
 // src/app/counter/page.tsx
-import { redis } from '../../lib/redis';
+import { redis } from '@/lib/redis';
+import { headers } from 'next/headers';
 
-// Server Component：每次請求時在伺服器端執行
-// revalidate = 0 確保每次都是最新數字，不使用快取
+// 強制每次請求都重新執行，不使用快取
 export const revalidate = 0;
 
-const VIEWS_KEY = 'page:views';
-
-async function incrementAndGetViews(): Promise<number> {
-  // Server script：直接在伺服器端操作 Redis，不會把 Token 暴露給瀏覽器
-  return redis.incr(VIEWS_KEY);
-}
-
 export default async function CounterPage() {
-  const views = await incrementAndGetViews();
+  // 1. 取得用戶 IP（用於限流）
+  const headerList = await headers();
+  const ip = headerList.get('x-forwarded-for')?.split(',')[0] || '127.0.0.1';
+  const rateKey = `rate:ip:${ip}`;
+
+  // 2. 實作限流 (每 60 秒最多 10 次)
+  const count = await redis.incr(rateKey);
+  if (count === 1) {
+    await redis.expire(rateKey, 60);
+  }
+
+  // 3. 檢查是否超過限制
+  if (count > 10) {
+    return (
+      <main className="min-h-screen flex items-center justify-center bg-red-50">
+        <div className="text-center p-8 bg-white shadow-xl rounded-2xl border border-red-200">
+          <h1 className="text-2xl font-bold text-red-600 mb-2">請求過於頻繁</h1>
+          <p className="text-gray-600">請等 60 秒後再重新整理頁面。</p>
+          <p className="mt-4 text-sm text-gray-400">目前計數：{count} / 10</p>
+        </div>
+      </main>
+    );
+  }
+
+  // 4. 增加總瀏覽次數 (原子操作)
+  const views = await redis.incr('page:views');
 
   return (
-    <main className="min-h-screen flex items-center justify-center">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">頁面瀏覽計數器</h1>
-        <p className="text-6xl font-mono text-blue-600">{views}</p>
-        <p className="text-gray-500 mt-2">次訪問</p>
-        <p className="text-sm text-gray-400 mt-4">
-          重新整理這個頁面，數字會增加
+    <main className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="text-center p-12 bg-white shadow-2xl rounded-3xl border border-gray-100">
+        <h1 className="text-gray-500 uppercase tracking-widest text-sm font-bold mb-4">
+          Total Page Views
+        </h1>
+        <p className="text-8xl font-black text-indigo-600 mb-6 tabular-nums">
+          {views}
         </p>
+        <div className="pt-6 border-t border-gray-50 text-gray-400 text-sm">
+          <p>您的 IP: <span className="font-mono">{ip}</span></p>
+          <p>限流狀態: <span className="text-indigo-400 font-medium">{count} / 10</span></p>
+        </div>
       </div>
     </main>
   );
 }
 ```
 
-> 這段程式會讀取 `UPSTASH_REDIS_REST_URL` 與 `UPSTASH_REDIS_REST_TOKEN`，但它是 Server Component（伺服器元件），不會被送到瀏覽器。  
-> 如果你改成 Client Component（檔案最上方加 `"use client"`），就不能直接匯入 `redis` 或讀取私密環境變數。
-
-啟動 `npm run dev`，前往 `http://localhost:3000/counter`，每次重新整理數字都會 +1。
-
 ---
 
-## 步驟 6：建立 Rate Limiting（防濫用）
+## 關鍵觀念對比
 
-Rate Limiting 是「防止同一個用戶在短時間內呼叫太多次 API」的機制。  
-例如：每個 IP 每 60 秒最多呼叫 10 次。
-
-這裡適合寫成 Route Handler（路由處理函式），因為它本身就是一個會被外部請求呼叫的 HTTP API（超文字傳輸協定應用程式介面）端點，而且需要讀取請求的 Header（標頭）來判斷 IP。
-
-建立 `src/app/api/protected/route.ts`：
-
-```bash
-mkdir -p src/app/api/protected
-```
-
-```typescript
-// src/app/api/protected/route.ts
-import { redis } from '../../../lib/redis';
-
-const RATE_LIMIT = 10;       // 每個時間窗口最多 10 次
-const WINDOW_SECONDS = 60;   // 時間窗口：60 秒
-
-export async function GET(request: Request) {
-  // 取得用戶 IP（Vercel 注入的 Header；本機開發時使用 '127.0.0.1'）
-  const ip =
-    request.headers.get('x-forwarded-for')?.split(',')[0].trim() ??
-    '127.0.0.1';
-
-  // 每個 IP 有自己的 Key：rate:ip:123.456.789.0
-  const key = `rate:ip:${ip}`;
-
-  // incr() 讓這個 Key 的計數 +1，並回傳目前的計數值
-  const count = await redis.incr(key);
-
-  // 第一次呼叫時（count === 1），設定 TTL（到期時間）
-  // 到期後 Redis 自動刪除這個 Key，計數歸零
-  if (count === 1) {
-    await redis.expire(key, WINDOW_SECONDS);
-  }
-
-  // 檢查是否超過限制
-  if (count > RATE_LIMIT) {
-    return Response.json(
-      {
-        error: `請求過於頻繁，請 ${WINDOW_SECONDS} 秒後再試`,
-        retryAfter: WINDOW_SECONDS,
-        currentCount: count,
-        limit: RATE_LIMIT,
-      },
-      {
-        status: 429,  // 429 Too Many Requests
-        headers: {
-          'Retry-After': String(WINDOW_SECONDS),
-          'X-RateLimit-Limit': String(RATE_LIMIT),
-          'X-RateLimit-Remaining': String(Math.max(0, RATE_LIMIT - count)),
-        },
-      }
-    );
-  }
-
-  // 通過限制，執行正常邏輯
-  return Response.json({
-    message: '呼叫成功！',
-    ip,
-    currentCount: count,
-    remaining: RATE_LIMIT - count,
-    resetIn: `${WINDOW_SECONDS} 秒`,
-  });
-}
-```
-
-### Rate Limiting 的運作邏輯
-
-```
-第 1 次請求 → count = 1 → 設定 60 秒 TTL → 回傳成功（剩餘 9 次）
-第 2 次請求 → count = 2 → TTL 已設定，不再設定 → 回傳成功（剩餘 8 次）
-...
-第 10 次請求 → count = 10 → 回傳成功（剩餘 0 次）
-第 11 次請求 → count = 11 → 超過限制 → 回傳 429 Too Many Requests
-...
-60 秒後 → Redis TTL 到期 → Key 自動刪除 → 計數歸零
-第 1 次請求 → count = 1 → 重新計時
-```
-
-### 測試 Rate Limiting
-
-用迴圈快速呼叫 API，觸發限制：
-
-```bash
-# 連續呼叫 15 次
-for i in $(seq 1 15); do
-  echo "第 $i 次："
-  curl -s http://localhost:3000/api/protected | python3 -m json.tool
-  echo "---"
-done
-```
-
-前 10 次會成功，第 11 次之後會收到 `429` 錯誤。
+| 比較項目 | 傳統 API 路由方式 | Server Component 方式 (推薦) |
+| :--- | :--- | :--- |
+| **流程** | 瀏覽器 → API → Redis → 回傳數據 → 前端渲染 | 伺服器渲染 HTML 時直接讀取 Redis |
+| **網路開銷** | 額外一次 HTTP 請求 (Round-trip) | **零** 額外請求 (Zero round-trip) |
+| **安全性** | 需注意 API 端點是否被惡意大量呼叫 | 代碼完全在伺服器端，不暴露 API 給外界 |
+| **SEO** | 需處理 Client-side 讀取狀態 (Loading) | **完美 SEO**，HTML 產出時即包含計數 |
 
 ---
 
@@ -305,23 +132,19 @@ done
 
 | 指令 | 說明 | 範例 |
 |------|------|------|
-| `redis.get(key)` | 取得值 | `await redis.get('name')` |
-| `redis.set(key, value)` | 設定值 | `await redis.set('name', 'Alice')` |
-| `redis.set(key, value, { ex: 60 })` | 設定值並在 60 秒後自動刪除 | 登入狀態、一次性驗證碼 |
-| `redis.incr(key)` | 數值 +1（原子操作） | 計數器 |
-| `redis.expire(key, seconds)` | 設定 Key 的存活時間 | 搭配 incr 做 Rate Limiting |
-| `redis.del(key)` | 刪除 Key | 登出時清除 Session |
+| `redis.get(key)` | 取得值 | `await redis.get('views')` |
+| `redis.incr(key)` | 數值 +1（原子操作） | 非常適合計數器，不會因為並發而遺失數字 |
+| `redis.expire(key, sec)`| 設定到期時間 | 常用於限流、暫存、一次性驗證碼 |
+| `redis.set(key, val)` | 設定值 | 可搭配 `{ ex: 60 }` 同時設定秒數 |
 
 ---
 
 ## ✅ 本步驟完成確認
 
-- [ ] 已在 Vercel Marketplace 建立 Upstash Redis
-- [ ] 已執行 `vercel env pull .env.local` 取得 `UPSTASH_REDIS_REST_URL` 和 `UPSTASH_REDIS_REST_TOKEN`
-- [ ] 安裝 `@upstash/redis` 完成
-- [ ] 建立了 `src/lib/redis.ts` 工具函式
-- [ ] 訪問 `/counter` 並重新整理，確認數字每次 +1
-- [ ] 快速呼叫 `/api/protected` 超過 10 次，確認收到 429 錯誤
+- [ ] 已建立 `src/lib/redis.ts` 工具函式
+- [ ] 頁面 `/counter` 每次重新整理，數字正確增加
+- [ ] 快速重新整理 10 次以上，能正確觸發「請求過於頻繁」的限流畫面
+- [ ] 理解為什麼 Server Component 不需要另外寫 `/api` 就能操作資料庫
 
 ---
 
