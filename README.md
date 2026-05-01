@@ -96,7 +96,18 @@
 
 ---
 
-#### 路徑四：單元測試（Unit Tests）
+#### 路徑四：Supabase 生態系與應用
+
+> 適合想掌握完整 BaaS（Backend as a Service），以全端思維開發高互動性應用的學習者。
+
+| 步驟 | 章節 | 說明 |
+|:----:|------|------|
+| **1** | [11 - Supabase 生態系與應用](./11-Supabase生態系與應用/主題.md) | 學習 Authentication、Database、Storage、Realtime 等核心功能 |
+| **2** ✦ | [實戰：Supabase 全端專案整合](./11-Supabase生態系與應用/README.md) | 使用 1 個專案慢慢擴充功能，最後成為完整的專案 |
+
+---
+
+#### 路徑五：單元測試（Unit Tests）
 
 > 適合希望提升程式品質、降低改動風險、建立「可持續維護」開發習慣的學習者。
 
