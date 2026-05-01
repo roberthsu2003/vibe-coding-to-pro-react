@@ -53,7 +53,7 @@ import { redirect } from 'next/navigation'
 import { createClient } from '@/utils/supabase/server'
 
 export async function login(formData: FormData) {
-  const supabase = createClient()
+  const supabase = await createClient()
 
   const data = {
     email: formData.get('email') as string,
@@ -71,7 +71,7 @@ export async function login(formData: FormData) {
 }
 
 export async function signup(formData: FormData) {
-  const supabase = createClient()
+  const supabase = await createClient()
 
   const data = {
     email: formData.get('email') as string,
@@ -135,7 +135,7 @@ import { createClient } from '@/utils/supabase/server'
 import { redirect } from 'next/navigation'
 
 export default async function DashboardPage() {
-  const supabase = createClient()
+  const supabase = await createClient()
 
   // 取得目前使用者
   const { data: { user } } = await supabase.auth.getUser()
@@ -146,7 +146,7 @@ export default async function DashboardPage() {
 
   async function signOut() {
     'use server'
-    const supabase = createClient()
+    const supabase = await createClient()
     await supabase.auth.signOut()
     redirect('/login')
   }
