@@ -7,6 +7,40 @@
 
 ---
 
+## 前置作業：Supabase Dashboard 設定
+
+在撰寫任何程式碼之前，需先在 Supabase 後台完成以下設定。
+
+### 1. 啟用 Email 驗證
+
+1. 在 Supabase 後台左側選單，點擊 **Authentication**。
+2. 進入 **Providers** 分頁。
+3. 找到 **Email**，確認它已是 **Enabled**（預設為啟用）。
+4. 你可以選擇是否開啟 **Confirm email**（Email 驗證信）：
+   - **開啟**：使用者註冊後需點擊驗證信才能登入（正式環境建議）。
+   - **關閉**：註冊後直接登入（開發測試時較方便）。
+
+> **開發建議**：初期練習時可先**關閉** Confirm email，避免每次測試都要收信，待功能完成後再開啟。
+
+---
+
+### 2. 設定 Site URL 與重新導向網址
+
+Supabase 在寄送驗證信或進行 OAuth 登入後，需要知道要把使用者導向哪個網址。若設定錯誤，驗證流程會失敗。
+
+1. 在左側選單，進入 **Authentication > URL Configuration**。
+2. 設定 **Site URL**（你的應用程式主網址）：
+   - 本機開發：填入 `http://localhost:3000`
+   - 部署後：填入你的正式網域（例如 `https://your-app.vercel.app`）
+3. 在 **Redirect URLs** 欄位中，新增允許的回調網址：
+   ```
+   http://localhost:3000/**
+   ```
+   > 加上 `/**` 萬用字元，允許任何 `/` 後的路徑（例如 `/auth/callback`）。
+4. 點擊 **Save** 儲存。
+
+---
+
 ## 步驟 1：建立登入 / 註冊頁面
 
 我們將在同一個頁面建立登入表單。
@@ -130,7 +164,71 @@ export default async function DashboardPage() {
 }
 ```
 
-*(提示：在正式開發中，我們通常還會設定 `middleware.ts` 來統一攔截未登入的使用者，避免每個頁面都要手動檢查。)*
+---
+
+## 步驟 4：設定 Middleware 保護路由
+
+每個頁面手動呼叫 `supabase.auth.getUser()` 並判斷跳轉，既繁瑣又容易遺漏。Next.js 的 `middleware.ts` 可以在請求抵達頁面**之前**統一攔截，自動將未登入的使用者導向登入頁。
+
+在專案根目錄（與 `src/` 同層）建立 `middleware.ts`：
+
+```typescript
+import { createServerClient } from '@supabase/ssr'
+import { NextResponse, type NextRequest } from 'next/server'
+
+export async function middleware(request: NextRequest) {
+  let supabaseResponse = NextResponse.next({
+    request,
+  })
+
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        getAll() {
+          return request.cookies.getAll()
+        },
+        setAll(cookiesToSet) {
+          cookiesToSet.forEach(({ name, value }) =>
+            request.cookies.set(name, value)
+          )
+          supabaseResponse = NextResponse.next({ request })
+          cookiesToSet.forEach(({ name, value, options }) =>
+            supabaseResponse.cookies.set(name, value, options)
+          )
+        },
+      },
+    }
+  )
+
+  // 重新整理 Session（讓 Cookie 保持最新）
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  // 若使用者未登入，且目標路徑以 /dashboard 開頭，則導向 /login
+  if (!user && request.nextUrl.pathname.startsWith('/dashboard')) {
+    const url = request.nextUrl.clone()
+    url.pathname = '/login'
+    return NextResponse.redirect(url)
+  }
+
+  return supabaseResponse
+}
+
+// 設定 Middleware 要攔截哪些路徑
+// 這裡排除靜態檔案與 Next.js 內部路徑，僅攔截一般頁面請求
+export const config = {
+  matcher: [
+    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+  ],
+}
+```
+
+設定好後，即使直接在網址列輸入 `/dashboard`，也會被自動導向 `/login`，無需在每個受保護的頁面重複寫判斷邏輯。
+
+> **注意**：`middleware.ts` 必須放在**專案根目錄**（App Router 架構下，即與 `src/` 資料夾同層），而不是 `src/` 裡面，否則 Next.js 不會自動載入它。
 
 ---
 
