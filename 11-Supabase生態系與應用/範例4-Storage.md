@@ -86,3 +86,7 @@ export default function AvatarUpload({ userId, onUploadSuccess }: { userId: stri
 ```
 
 這段程式碼會在使用者選取檔案後，自動上傳至 `avatars` Bucket，並透過 `onUploadSuccess` 回傳最終的圖片 URL。
+
+---
+
+[下一章：範例 5 - Realtime (即時資料同步)](./範例5-Realtime.md)

@@ -103,3 +103,7 @@ import RealtimeTodos from '@/components/RealtimeTodos'
 ```
 
 現在，如果在另一個瀏覽器分頁新增或刪除 Todo，這個頁面會「即時」自動更新！這就是 WebSocket 與 Supabase Realtime 的強大威力。
+
+---
+
+[下一章：實戰演練 - Supabase 全端專案整合](./README.md)

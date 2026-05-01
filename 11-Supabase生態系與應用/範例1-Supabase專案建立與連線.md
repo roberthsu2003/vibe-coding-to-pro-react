@@ -123,3 +123,7 @@ export default async function Home() {
 ```
 
 執行 `npm run dev`，開啟 http://localhost:3000 ，如果沒有報錯，就可以進入下一個範例！
+
+---
+
+[下一章：範例 2 - Authentication (使用者驗證)](./範例2-Authentication.md)

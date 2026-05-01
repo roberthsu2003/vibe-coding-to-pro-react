@@ -131,3 +131,7 @@ export default async function DashboardPage() {
 ```
 
 *(提示：在正式開發中，我們通常還會設定 `middleware.ts` 來統一攔截未登入的使用者，避免每個頁面都要手動檢查。)*
+
+---
+
+[下一章：範例 3 - Database 與 RLS (資料庫與權限控制)](./範例3-Database與RLS.md)

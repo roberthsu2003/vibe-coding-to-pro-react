@@ -114,3 +114,7 @@ export default async function DashboardPage() {
 ```
 
 由於 RLS 的保護，這段程式碼只會讀出目前登入使用者的 Todo，也無法刪除別人的資料。
+
+---
+
+[下一章：範例 4 - Storage (雲端檔案儲存)](./範例4-Storage.md)
