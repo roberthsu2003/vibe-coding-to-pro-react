@@ -3,7 +3,7 @@
 ## 學習目標
 - 在 Next.js 中實作註冊與登入功能。
 - 了解 `@supabase/ssr` 的 Cookie-based 驗證機制。
-- 透過 Middleware 保護路由。
+- 在 Server Component 中保護受限路由。
 
 ---
 
@@ -63,7 +63,7 @@ export async function login(formData: FormData) {
   const { error } = await supabase.auth.signInWithPassword(data)
 
   if (error) {
-    redirect('/login?message=Could not authenticate user')
+    redirect(`/login?message=${encodeURIComponent(error.message)}`)
   }
 
   revalidatePath('/', 'layout')
@@ -78,10 +78,17 @@ export async function signup(formData: FormData) {
     password: formData.get('password') as string,
   }
 
-  const { error } = await supabase.auth.signUp(data)
+  const { data: signupData, error } = await supabase.auth.signUp(data)
 
   if (error) {
-    redirect('/login?message=Could not authenticate user')
+    redirect(`/login?message=${encodeURIComponent(error.message)}`)
+  }
+
+  // 若 Supabase 設定了「需要 Email 驗證」，signUp 成功後不會立即建立 session
+  if (!signupData.session) {
+    redirect(
+      `/login?message=${encodeURIComponent('註冊成功，請先到信箱完成驗證後再登入。')}`
+    )
   }
 
   revalidatePath('/', 'layout')
@@ -89,29 +96,50 @@ export async function signup(formData: FormData) {
 }
 ```
 
+> **說明**：
+> - 錯誤訊息改用 `encodeURIComponent(error.message)` 傳遞，讓使用者看到 Supabase 回傳的實際錯誤原因（例如密碼太短、Email 已被使用等），而非固定的通用訊息。
+> - `signup` 額外判斷 `!signupData.session`：當 Supabase 後台開啟了「Confirm email」時，使用者完成註冊後不會立即取得 session，這時應提示使用者去收信驗證，而非直接跳轉 `/dashboard`。
+
 ---
 
 ## 步驟 2：建立登入 / 註冊頁面
 
-我們將在同一個頁面建立登入表單。
+我們將在同一個頁面建立登入表單，並顯示來自 Server Actions 的訊息（例如錯誤原因或驗證提示）。
 
 建立 `src/app/login/page.tsx`：
 
 ```tsx
 import { login, signup } from './actions'
 
-export default function LoginPage() {
+type LoginPageProps = {
+  searchParams?: Promise<{
+    message?: string | string[]
+  }>
+}
+
+export default async function LoginPage({ searchParams }: LoginPageProps) {
+  const params = await searchParams
+  const message = Array.isArray(params?.message)
+    ? params.message[0]
+    : params?.message
+
   return (
     <div className="flex justify-center items-center h-screen bg-gray-100">
       <form className="bg-white p-8 rounded shadow-md w-96 flex flex-col gap-4">
         <h2 className="text-2xl font-bold mb-4">登入 / 註冊</h2>
-        
+
+        {message ? (
+          <p className="rounded border border-yellow-300 bg-yellow-50 px-3 py-2 text-sm text-yellow-800">
+            {message}
+          </p>
+        ) : null}
+
         <label htmlFor="email">Email:</label>
         <input id="email" name="email" type="email" required className="border p-2 rounded" />
-        
+
         <label htmlFor="password">密碼:</label>
         <input id="password" name="password" type="password" required className="border p-2 rounded" />
-        
+
         <div className="flex gap-4 mt-4">
           <button formAction={login} className="bg-blue-500 text-white px-4 py-2 rounded flex-1">登入</button>
           <button formAction={signup} className="bg-green-500 text-white px-4 py-2 rounded flex-1">註冊</button>
@@ -121,6 +149,10 @@ export default function LoginPage() {
   )
 }
 ```
+
+> **說明**：
+> - Next.js 16 (App Router) 的 `searchParams` prop 型別為 `Promise<...>`，必須 `await` 才能取得值，因此頁面元件需宣告為 `async`。
+> - 當 `actions.ts` 的 `redirect('/login?message=...')` 被呼叫時，`message` 會出現在 URL 查詢字串中。頁面在這裡讀取並顯示它，讓使用者知道發生了什麼事。
 
 ---
 
@@ -164,72 +196,5 @@ export default async function DashboardPage() {
 }
 ```
 
----
-
-## 步驟 4：設定 Middleware 保護路由
-
-每個頁面手動呼叫 `supabase.auth.getUser()` 並判斷跳轉，既繁瑣又容易遺漏。Next.js 的 `middleware.ts` 可以在請求抵達頁面**之前**統一攔截，自動將未登入的使用者導向登入頁。
-
-在專案根目錄（與 `src/` 同層）建立 `middleware.ts`：
-
-```typescript
-import { createServerClient } from '@supabase/ssr'
-import { NextResponse, type NextRequest } from 'next/server'
-
-export async function middleware(request: NextRequest) {
-  let supabaseResponse = NextResponse.next({
-    request,
-  })
-
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        getAll() {
-          return request.cookies.getAll()
-        },
-        setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value }) =>
-            request.cookies.set(name, value)
-          )
-          supabaseResponse = NextResponse.next({ request })
-          cookiesToSet.forEach(({ name, value, options }) =>
-            supabaseResponse.cookies.set(name, value, options)
-          )
-        },
-      },
-    }
-  )
-
-  // 重新整理 Session（讓 Cookie 保持最新）
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-
-  // 若使用者未登入，且目標路徑以 /dashboard 開頭，則導向 /login
-  if (!user && request.nextUrl.pathname.startsWith('/dashboard')) {
-    const url = request.nextUrl.clone()
-    url.pathname = '/login'
-    return NextResponse.redirect(url)
-  }
-
-  return supabaseResponse
-}
-
-// 設定 Middleware 要攔截哪些路徑
-// 這裡排除靜態檔案與 Next.js 內部路徑，僅攔截一般頁面請求
-export const config = {
-  matcher: [
-    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
-  ],
-}
-```
-
-設定好後，即使直接在網址列輸入 `/dashboard`，也會被自動導向 `/login`，無需在每個受保護的頁面重複寫判斷邏輯。
-
-> **注意**：`middleware.ts` 必須放在**專案根目錄**（App Router 架構下，即與 `src/` 資料夾同層），而不是 `src/` 裡面，否則 Next.js 不會自動載入它。
-
----
 
 [下一章：範例 3 - Database 與 RLS (資料庫與權限控制)](./範例3-Database與RLS.md)
