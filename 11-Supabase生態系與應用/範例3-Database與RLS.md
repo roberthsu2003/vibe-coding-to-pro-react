@@ -66,7 +66,12 @@ export default async function DashboardPage() {
   if (!user) redirect('/login')
 
   // 讀取資料庫
-  const { data: todos } = await supabase.from('todos').select('*').order('created_at', { ascending: false })
+  // .eq() 是防禦性寫法，即使 RLS 已保護，明確指定條件可讀性更高
+  const { data: todos } = await supabase
+    .from('todos')
+    .select('*')
+    .eq('user_id', user.id)
+    .order('created_at', { ascending: false })
 
   // Server Action: 新增代辦事項
   async function addTodo(formData: FormData) {
