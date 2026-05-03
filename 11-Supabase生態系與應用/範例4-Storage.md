@@ -91,13 +91,35 @@ export default function AvatarUpload({ userId, onUploadSuccess }: { userId: stri
 
 ## 步驟 3：在頁面中使用元件進行測試
 
-`AvatarUpload` 是一個 Client Component，需要嵌入到某個頁面才能實際操作。由於上傳需要登入狀態（才有 `userId`），建議加入到已受保護的儀表板頁面。
+`AvatarUpload` 是一個 Client Component，需要嵌入到某個頁面才能實際操作。由於範例 3 已修改過 `src/app/dashboard/page.tsx`，這裡**不要覆蓋整個檔案**，只需在原有基礎上做兩處修改：
 
-修改 `src/app/dashboard/page.tsx`，將元件引入並顯示：
+**修改 1**：在檔案頂部加入 import：
+
+```tsx
+import AvatarUpload from '@/components/AvatarUpload'
+```
+
+**修改 2**：在 `return` 的 JSX 裡，找到頁首區塊下方（新增表單的上方），插入元件：
+
+```tsx
+{/* 頭像上傳 */}
+<div className="mb-8">
+  <AvatarUpload
+    userId={user.id}
+    onUploadSuccess={(url) => console.log('上傳成功，圖片網址：', url)}
+  />
+</div>
+
+{/* 新增表單 */}
+<form action={addTodo} className="flex gap-2 mb-8">
+```
+
+修改後 `src/app/dashboard/page.tsx` 的完整結果：
 
 ```tsx
 import { createClient } from '@/utils/supabase/server'
 import { redirect } from 'next/navigation'
+import { revalidatePath } from 'next/cache'
 import AvatarUpload from '@/components/AvatarUpload'
 
 export default async function DashboardPage() {
@@ -106,16 +128,75 @@ export default async function DashboardPage() {
 
   if (!user) redirect('/login')
 
-  return (
-    <main className="max-w-md mx-auto mt-10 p-6">
-      <h1 className="text-2xl font-bold mb-4">儀表板</h1>
-      <p className="text-gray-600 mb-6">已登入：{user.email}</p>
+  const { data: todos } = await supabase
+    .from('todos')
+    .select('*')
+    .eq('user_id', user.id)
+    .order('created_at', { ascending: false })
 
-      <AvatarUpload
-        userId={user.id}
-        onUploadSuccess={(url) => console.log('上傳成功，圖片網址：', url)}
-      />
-    </main>
+  async function signOut() {
+    'use server'
+    const supabase = await createClient()
+    await supabase.auth.signOut()
+    redirect('/login')
+  }
+
+  async function addTodo(formData: FormData) {
+    'use server'
+    const title = formData.get('title') as string
+    const supabase = await createClient()
+    await supabase.from('todos').insert({ title })
+    revalidatePath('/dashboard')
+  }
+
+  async function deleteTodo(formData: FormData) {
+    'use server'
+    const id = formData.get('id') as string
+    const supabase = await createClient()
+    await supabase.from('todos').delete().eq('id', id)
+    revalidatePath('/dashboard')
+  }
+
+  return (
+    <div className="p-8 max-w-2xl mx-auto">
+      {/* 頁首：標題、Email、登出按鈕 */}
+      <div className="flex justify-between items-center mb-8">
+        <div>
+          <h1 className="text-3xl font-bold">你的代辦事項</h1>
+          <p className="text-gray-500 mt-1">登入 Email：{user.email}</p>
+        </div>
+        <form action={signOut}>
+          <button className="bg-red-500 text-white px-4 py-2 rounded">登出</button>
+        </form>
+      </div>
+
+      {/* 頭像上傳 */}
+      <div className="mb-8">
+        <AvatarUpload
+          userId={user.id}
+          onUploadSuccess={(url) => console.log('上傳成功，圖片網址：', url)}
+        />
+      </div>
+
+      {/* 新增表單 */}
+      <form action={addTodo} className="flex gap-2 mb-8">
+        <input name="title" required placeholder="新增任務..." className="border p-2 rounded flex-1" />
+        <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded">新增</button>
+      </form>
+
+      {/* 列表渲染 */}
+      <ul className="space-y-4">
+        {todos?.map((todo) => (
+          <li key={todo.id} className="flex justify-between items-center p-4 border rounded bg-white shadow-sm">
+            <span>{todo.title}</span>
+            <form action={deleteTodo}>
+              <input type="hidden" name="id" value={todo.id} />
+              <button type="submit" className="text-red-500">刪除</button>
+            </form>
+          </li>
+        ))}
+      </ul>
+    </div>
   )
 }
 ```
