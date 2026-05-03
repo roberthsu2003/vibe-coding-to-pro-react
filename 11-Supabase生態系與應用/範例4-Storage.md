@@ -89,4 +89,46 @@ export default function AvatarUpload({ userId, onUploadSuccess }: { userId: stri
 
 ---
 
+## 步驟 3：在頁面中使用元件進行測試
+
+`AvatarUpload` 是一個 Client Component，需要嵌入到某個頁面才能實際操作。由於上傳需要登入狀態（才有 `userId`），建議加入到已受保護的儀表板頁面。
+
+修改 `src/app/dashboard/page.tsx`，將元件引入並顯示：
+
+```tsx
+import { createClient } from '@/utils/supabase/server'
+import { redirect } from 'next/navigation'
+import AvatarUpload from '@/components/AvatarUpload'
+
+export default async function DashboardPage() {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+
+  if (!user) redirect('/login')
+
+  return (
+    <main className="max-w-md mx-auto mt-10 p-6">
+      <h1 className="text-2xl font-bold mb-4">儀表板</h1>
+      <p className="text-gray-600 mb-6">已登入：{user.email}</p>
+
+      <AvatarUpload
+        userId={user.id}
+        onUploadSuccess={(url) => console.log('上傳成功，圖片網址：', url)}
+      />
+    </main>
+  )
+}
+```
+
+### 測試步驟
+
+1. 啟動開發伺服器：`npm run dev`
+2. 瀏覽器前往 `http://localhost:3000/login`，用已建立的帳號登入
+3. 登入後會導向 `/dashboard`，頁面下方應出現「上傳頭像」的檔案選擇器
+4. 選取一張圖片後，元件會自動上傳
+5. 上傳成功後出現 `alert('上傳成功！')`，並在瀏覽器的 DevTools Console 看到圖片的公開網址
+6. 前往 Supabase 後台 → **Storage → avatars**，確認檔案確實存在
+
+---
+
 [下一章：範例 5 - Realtime (即時資料同步)](./範例5-Realtime.md)
