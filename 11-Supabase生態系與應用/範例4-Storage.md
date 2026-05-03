@@ -28,8 +28,9 @@
 import { useState } from 'react'
 import { createClient } from '@/utils/supabase/client'
 
-export default function AvatarUpload({ userId, onUploadSuccess }: { userId: string, onUploadSuccess: (url: string) => void }) {
+export default function AvatarUpload({ userId }: { userId: string }) {
   const [uploading, setUploading] = useState(false)
+  const [uploadedUrl, setUploadedUrl] = useState<string | null>(null)
   const supabase = createClient()
 
   async function uploadAvatar(event: React.ChangeEvent<HTMLInputElement>) {
@@ -44,7 +45,6 @@ export default function AvatarUpload({ userId, onUploadSuccess }: { userId: stri
       const fileExt = file.name.split('.').pop()
       const filePath = `${userId}-${Math.random()}.${fileExt}`
 
-      // 上傳檔案至 supabase storage
       const { error: uploadError } = await supabase.storage
         .from('avatars')
         .upload(filePath, file)
@@ -53,10 +53,8 @@ export default function AvatarUpload({ userId, onUploadSuccess }: { userId: stri
         throw uploadError
       }
 
-      // 取得公開 URL
       const { data } = supabase.storage.from('avatars').getPublicUrl(filePath)
-      
-      onUploadSuccess(data.publicUrl)
+      setUploadedUrl(data.publicUrl)
       alert('上傳成功！')
 
     } catch (error) {
@@ -80,12 +78,17 @@ export default function AvatarUpload({ userId, onUploadSuccess }: { userId: stri
         disabled={uploading}
         className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 focus:outline-none"
       />
+      {uploadedUrl && (
+        <img src={uploadedUrl} alt="avatar" className="mt-4 w-24 h-24 rounded-full object-cover" />
+      )}
     </div>
   )
 }
 ```
 
-這段程式碼會在使用者選取檔案後，自動上傳至 `avatars` Bucket，並透過 `onUploadSuccess` 回傳最終的圖片 URL。
+> **注意**：這個元件只接受 `userId: string`，沒有 `onUploadSuccess` 這類 function prop。
+> 原因：`dashboard/page.tsx` 是 **Server Component**，傳給 Client Component 的 props 必須可序列化（string、number、boolean 等），**普通 function 無法序列化**，傳入會導致 Next.js 拋出錯誤。
+> 因此，上傳後的 URL 改由元件內部的 `uploadedUrl` state 自行管理，直接在元件內顯示上傳後的頭像圖片。
 
 ---
 
@@ -104,10 +107,7 @@ import AvatarUpload from '@/components/AvatarUpload'
 ```tsx
 {/* 頭像上傳 */}
 <div className="mb-8">
-  <AvatarUpload
-    userId={user.id}
-    onUploadSuccess={(url) => console.log('上傳成功，圖片網址：', url)}
-  />
+  <AvatarUpload userId={user.id} />
 </div>
 
 {/* 新增表單 */}
@@ -172,10 +172,7 @@ export default async function DashboardPage() {
 
       {/* 頭像上傳 */}
       <div className="mb-8">
-        <AvatarUpload
-          userId={user.id}
-          onUploadSuccess={(url) => console.log('上傳成功，圖片網址：', url)}
-        />
+        <AvatarUpload userId={user.id} />
       </div>
 
       {/* 新增表單 */}
@@ -207,7 +204,7 @@ export default async function DashboardPage() {
 2. 瀏覽器前往 `http://localhost:3000/login`，用已建立的帳號登入
 3. 登入後會導向 `/dashboard`，頁面下方應出現「上傳頭像」的檔案選擇器
 4. 選取一張圖片後，元件會自動上傳
-5. 上傳成功後出現 `alert('上傳成功！')`，並在瀏覽器的 DevTools Console 看到圖片的公開網址
+5. 上傳成功後出現 `alert('上傳成功！')`，頁面上會即時顯示剛上傳的頭像圖片
 6. 前往 Supabase 後台 → **Storage → avatars**，確認檔案確實存在
 
 ---
