@@ -71,9 +71,9 @@ export async function createClient() {
         },
         remove(name: string, options: CookieOptions) {
           try {
-            cookieStore.set({ name, value: '', ...options })
+            cookieStore.delete({ name, ...options })
           } catch (error) {
-            // The `remove` method was called from a Server Component.
+            // The `delete` method was called from a Server Component.
             // This can be ignored if you have middleware refreshing
             // user sessions.
           }

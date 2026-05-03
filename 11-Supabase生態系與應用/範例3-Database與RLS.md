@@ -65,12 +65,10 @@ export default async function DashboardPage() {
 
   if (!user) redirect('/login')
 
-  // 讀取資料庫
-  // .eq() 是防禦性寫法，即使 RLS 已保護，明確指定條件可讀性更高
+  // 讀取資料庫：RLS 已確保只回傳目前登入使用者的資料，不需再加 .eq() 過濾
   const { data: todos } = await supabase
     .from('todos')
     .select('*')
-    .eq('user_id', user.id)
     .order('created_at', { ascending: false })
 
   // Server Action: 登出

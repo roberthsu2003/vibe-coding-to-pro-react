@@ -25,40 +25,72 @@
 ```tsx
 'use client'
 
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { createClient } from '@/utils/supabase/client'
 
 export default function AvatarUpload({ userId }: { userId: string }) {
   const [uploading, setUploading] = useState(false)
+  const selectedFileRef = useRef<File | null>(null)
+  const [selectedFileName, setSelectedFileName] = useState<string | null>(null)
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null)
   const [uploadedUrl, setUploadedUrl] = useState<string | null>(null)
+  const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const supabase = createClient()
 
-  async function uploadAvatar(event: React.ChangeEvent<HTMLInputElement>) {
+  function handleFileChange(event: React.ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0] ?? null
+
+    setErrorMessage(null)
+    setUploadedUrl(null)
+    selectedFileRef.current = file
+    setSelectedFileName(file?.name ?? null)
+    setPreviewUrl(null)
+
+    if (!file) return
+
+    const reader = new FileReader()
+    reader.onload = () => {
+      setPreviewUrl(typeof reader.result === 'string' ? reader.result : null)
+    }
+    reader.onerror = () => {
+      setErrorMessage('圖片預覽讀取失敗，但仍可以嘗試上傳。')
+    }
+    reader.readAsDataURL(file)
+  }
+
+  async function uploadAvatar() {
     try {
       setUploading(true)
+      setErrorMessage(null)
+      setUploadedUrl(null)
 
-      if (!event.target.files || event.target.files.length === 0) {
-        throw new Error('You must select an image to upload.')
-      }
+      const selectedFile = selectedFileRef.current
+      if (!selectedFile) throw new Error('you must select an image to upload.')
 
-      const file = event.target.files[0]
-      const fileExt = file.name.split('.').pop()
+      const { data: { user }, error: userError } = await supabase.auth.getUser()
+      if (userError) throw userError
+      if (!user) throw new Error('請先登入後再上傳頭像。')
+
+      const fileExt = selectedFile.name.split('.').pop()
       const filePath = `${userId}-${Math.random()}.${fileExt}`
 
       const { error: uploadError } = await supabase.storage
         .from('avatars')
-        .upload(filePath, file)
+        .upload(filePath, selectedFile)
 
-      if (uploadError) {
-        throw uploadError
-      }
+      if (uploadError) throw uploadError
 
       const { data } = supabase.storage.from('avatars').getPublicUrl(filePath)
       setUploadedUrl(data.publicUrl)
-      alert('上傳成功！')
+      selectedFileRef.current = null
+      setSelectedFileName(null)
+      setPreviewUrl(null)
+      alert('上傳成功!')
 
     } catch (error) {
-      alert('Error uploading avatar!')
+      const message = error instanceof Error ? error.message : 'Error uploading avatar!'
+      setErrorMessage(message)
+      alert(message)
       console.log(error)
     } finally {
       setUploading(false)
@@ -74,21 +106,55 @@ export default function AvatarUpload({ userId }: { userId: string }) {
         type="file"
         id="single"
         accept="image/*"
-        onChange={uploadAvatar}
+        onChange={handleFileChange}
+        onInput={handleFileChange}
         disabled={uploading}
         className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 focus:outline-none"
       />
-      {uploadedUrl && (
-        <img src={uploadedUrl} alt="avatar" className="mt-4 w-24 h-24 rounded-full object-cover" />
-      )}
+      <p className="mt-2 text-sm text-gray-500">
+        目前狀態：{selectedFileName ? `已選擇 ${selectedFileName}` : '尚未選擇圖片'}
+      </p>
+      <div className="mt-4">
+        {previewUrl ? (
+          <div
+            role="img"
+            aria-label="頭像預覽"
+            className="h-32 w-32 rounded-full border bg-cover bg-center"
+            style={{ backgroundImage: `url(${previewUrl})` }}
+          />
+        ) : (
+          <div className="flex h-32 w-32 items-center justify-center rounded-full border bg-gray-100 text-sm text-gray-500">
+            尚無預覽
+          </div>
+        )}
+        {selectedFileName ? (
+          <p className="mt-2 text-sm text-gray-600">已選擇：{selectedFileName}</p>
+        ) : null}
+        <button
+          type="button"
+          onClick={uploadAvatar}
+          disabled={uploading || !selectedFileName}
+          className="mt-3 rounded bg-blue-500 px-4 py-2 text-white disabled:cursor-not-allowed disabled:bg-gray-400"
+        >
+          {uploading ? '上傳中 ...' : '確認上傳'}
+        </button>
+      </div>
+      {uploadedUrl ? (
+        <p className="mt-2 text-sm text-green-600">頭像已上傳成功</p>
+      ) : null}
+      {errorMessage ? (
+        <p className="mt-2 text-sm text-red-600">{errorMessage}</p>
+      ) : null}
     </div>
   )
 }
 ```
 
-> **注意**：這個元件只接受 `userId: string`，沒有 `onUploadSuccess` 這類 function prop。
-> 原因：`dashboard/page.tsx` 是 **Server Component**，傳給 Client Component 的 props 必須可序列化（string、number、boolean 等），**普通 function 無法序列化**，傳入會導致 Next.js 拋出錯誤。
-> 因此，上傳後的 URL 改由元件內部的 `uploadedUrl` state 自行管理，直接在元件內顯示上傳後的頭像圖片。
+> **設計說明**：
+> - **選檔與上傳分離**：`handleFileChange` 只處理預覽，使用者確認後才點「確認上傳」按鈕觸發 `uploadAvatar`，避免誤選就送出。
+> - **`useRef` 保存檔案**：用 `useRef` 而非 `useState` 保存 `File` 物件，因為上傳時不需要觸發重新渲染，只需在點擊按鈕時讀取即可。
+> - **`FileReader` 即時預覽**：選檔後用 `FileReader.readAsDataURL()` 讀取圖片，產生 base64 預覽 URL，讓使用者確認圖片後再上傳。
+> - **不使用 `onUploadSuccess` function prop**：`dashboard/page.tsx` 是 Server Component，傳給 Client Component 的 props 必須可序列化（string、number 等），**普通 function 無法序列化**，會導致 Next.js 拋出錯誤。上傳結果改由元件內部 state 管理。
 
 ---
 
@@ -202,10 +268,11 @@ export default async function DashboardPage() {
 
 1. 啟動開發伺服器：`npm run dev`
 2. 瀏覽器前往 `http://localhost:3000/login`，用已建立的帳號登入
-3. 登入後會導向 `/dashboard`，頁面下方應出現「上傳頭像」的檔案選擇器
-4. 選取一張圖片後，元件會自動上傳
-5. 上傳成功後出現 `alert('上傳成功！')`，頁面上會即時顯示剛上傳的頭像圖片
-6. 前往 Supabase 後台 → **Storage → avatars**，確認檔案確實存在
+3. 登入後會導向 `/dashboard`，頁面上方應出現「上傳頭像」的檔案選擇器
+4. 選取一張圖片後，圓形預覽區域會顯示選取的圖片，並顯示「已選擇：檔名」
+5. 點擊「**確認上傳**」按鈕送出（按鈕在未選檔時為灰色不可點擊）
+6. 上傳成功後出現 `alert('上傳成功!')`，元件下方顯示「頭像已上傳成功」綠色文字
+7. 前往 Supabase 後台 → **Storage → avatars**，確認檔案確實存在
 
 ---
 
