@@ -91,7 +91,11 @@ export default defineConfig({
 
 ## 4. 設定 GitHub Actions 自動部署 (推薦做法)
 
-我們將使用 GitHub Actions 來達成「只要 Push 程式碼，GitHub 就自動幫我打包並上線」。這不需要手動執行 `npm run build`，也不需要在 Repo 中保留任何打包後的檔案（如 `dist` 或 `docs`）。
+### GitHub Actions 的簡介
+
+GitHub Actions 是 GitHub 內建的 CI/CD（持續整合與持續部署）自動化工具。它允許開發者在特定事件（例如程式碼推送到 `main` 分支）發生時，自動觸發一連串的指令腳本。在我們的情境中，它可以讓 GitHub 的雲端伺服器自動幫我們執行安裝套件、打包 React 專案等繁瑣步驟，並將最終的靜態檔案直接部署到 GitHub Pages。
+
+透過這套自動化流程，我們能達成「只要 Push 程式碼，GitHub 就自動幫我打包並上線」。這代表我們不需要在本機手動執行 `npm run build`，也不需要在 Git 儲存庫中保留任何打包後的檔案（如 `dist` 或 `docs`），讓專案保持乾淨。
 
 ### 第一步：建立工作流程檔案
 
