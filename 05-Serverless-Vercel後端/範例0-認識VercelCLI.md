@@ -18,10 +18,10 @@ node --version
 npm --version
 ```
 
-確保 Node.js 版本為 **18.0.0 或以上**（建議 20 LTS 或更新）：
+確保 Node.js 版本為 **24.0.0 或以上**（建議 24 LTS 或更新）：
 
 ```
-node v20.11.0 或以上 ✅
+node v24.0.0 或以上 ✅
 npm 10.2.4 或以上 ✅
 ```
 
@@ -187,13 +187,13 @@ my-serverless-app/
   "name": "my-serverless-app",
   "version": "1.0.0",
   "engines": {
-    "node": ">=18.0.0"
+    "node": ">=24.0.0"
   },
   ...
 }
 ```
 
-這樣可以告訴 Vercel 你的專案需要 Node.js 18 或更新的版本。
+這樣可以告訴 Vercel 你的專案需要 Node.js 24 或更新的版本。
 
 ---
 

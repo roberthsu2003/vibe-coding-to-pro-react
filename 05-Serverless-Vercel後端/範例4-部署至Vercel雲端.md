@@ -117,13 +117,13 @@ GEMINI_API_KEY="請填入您的 Gemini API Key"
 
 ### 確認 `package.json` 的 Node.js 版本
 
-確認專案指定了適當的 Node.js 版本（推薦 18+）：
+確認專案指定了適當的 Node.js 版本（推薦 24+）：
 
 ```json
 {
   "name": "my-serverless-app",
   "engines": {
-    "node": ">=18.0.0"
+    "node": ">=24.0.0"
   },
   ...
 }
@@ -410,7 +410,7 @@ jobs:
 | 步驟 | 說明 |
 |---|---|
 | `checkout` | 下載你的程式碼 |
-| `setup-node` | 安裝 Node.js 20 環境 |
+| `setup-node` | 安裝 Node.js 24 環境 |
 | `npm install` | 安裝所有依賴套件 |
 | `npm run lint` | 執行 TypeScript 型別檢查（`tsc --noEmit`） |
 | `npm run build` | 確認專案可以成功編譯 |
