@@ -1,45 +1,126 @@
 # Vercel 簡介：現代化前端與 Serverless 部署平台
 
-[**Vercel資訊圖表**](./images/vercel簡介.png)
+[**Vercel 資訊圖表**](./images/vercel簡介.png)
 
-[Vercel](https://vercel.com/) 是一個專為前端開發者打造的雲端部署平台。它提供了非常直覺的開發者體驗（Developer Experience, DX），讓您可以輕鬆地將網站與應用程式部署到全球的邊緣節點（Edge Network）上。
+[Vercel](https://vercel.com/) 是一個專為前端開發者打造的雲端部署平台，提供直覺的開發者體驗（Developer Experience, DX），讓您能輕鬆將網站與應用程式部署到全球節點上。
 
-## 為什麼 Vercel 被視為一種 BaaS (Backend-as-a-Service)？
+---
 
-在現代的網頁開發架構中，Vercel 經常被視為一種輕量級的 **BaaS（後端即服務）** 解決方案。它不只負責託管靜態網頁，更內建了強大的後端能力與整合服務。
+## 為什麼選擇 Vercel？
 
-對於初學者或個人開發者，Vercel 提供了非常慷慨的 **Hobby (免費) 方案**。以下是我們在後續專案（包含 Serverless 後端與 Next.js 雲端生態系）中會重點使用到的 **免費核心功能**：
+Vercel 不只是靜態網頁託管，它更內建了強大的後端能力，是一種輕量級的 **BaaS（後端即服務）** 解決方案。對初學者與個人開發者，Vercel 提供慷慨的 **Hobby（免費）方案**，涵蓋以下核心功能：
 
-### 1. Serverless Functions (無伺服器函式)
-您可以直接在專案的 `api/` 資料夾下撰寫後端程式碼（例如 Node.js 或 Python），Vercel 會自動將這些檔案轉換為獨立的 API 節點。
-- **免費優勢**：您完全不需要租用主機、設定作業系統或維護伺服器。Hobby 方案每月提供充足的運算時數與 API 呼叫次數，對於學習與小型專案綽綽有餘。
+---
 
-### 2. Edge Runtime (邊緣運算)
-相較於傳統的 Node.js 伺服器，Edge Runtime 會將您的程式碼部署在離使用者實體距離最近的伺服器節點（CDN 邊緣節點）上執行。
-- **免費優勢**：享有極低的延遲與超快的啟動速度（無冷啟動延遲），大幅提升全端應用的反應時間。
+## 免費核心功能一覽
 
-### 3. Vercel Storage (Blob 與擴充資料庫)
-Vercel 官方以及其合作夥伴提供了一系列可以直接無縫整合的資料儲存方案：
-- **Vercel Blob**：提供簡單的物件儲存空間，適合用來存放網頁圖片或使用者上傳的靜態檔案。
-- **Upstash Redis**：內建的 Redis 整合服務，可輕鬆實現高頻次存取的「計數器」或是「API 限流 (Rate Limiting)」。
-- **免費優勢**：Hobby 方案皆有提供基礎的免費額度，無需額外綁定信用卡即可直接從 Vercel 後台一鍵建立並開通。
+### 1. Serverless Functions（無伺服器函式）
 
-### 4. Image Optimization (圖片最佳化)
-如果搭配 Next.js 使用，Vercel 會在雲端自動對圖片進行壓縮、轉換格式（如 WebP）與快取，不需要您手動處理圖片。
-- **免費優勢**：每月免費提供 1,000 張來源圖片的自動最佳化處理，不僅節省伺服器頻寬，更能大幅提升網頁載入速度。
+在專案的 `api/` 資料夾撰寫後端程式碼（Node.js、Python 等），Vercel 自動將其轉為獨立 API 節點。
 
-### 5. 自動化的 CI/CD 與 Vercel CLI 工具
-- **GitHub 自動部署**：只要將您的 GitHub 儲存庫授權給 Vercel，未來您只要把程式碼 Push 到雲端，Vercel 就會全自動幫您安裝套件、打包專案，並發佈上線。
-- **Vercel CLI**：透過終端機指令（如 `vercel dev`），您可以在本機完美模擬雲端的 Serverless 環境與環境變數，進行測試與除錯。
+| 項目 | 說明 |
+|------|------|
+| 支援語言 | Node.js 24、Python 3.13/3.14、Bun、Rust |
+| 預設逾時 | 300 秒 |
+| 免費優勢 | 無需租主機、不用維護伺服器 |
+
+---
+
+### 2. Fluid Compute（流體運算）
+
+Vercel 目前主推的運算模式，取代舊有的 Edge Runtime。
+
+- **跨請求重複使用函式實例**，大幅降低冷啟動延遲
+- 支援完整 **Node.js** 環境（相較 Edge Functions 相容性更佳）
+- 部署在距離使用者最近的伺服器節點執行
+- 與 Serverless Functions 相同價格，但效能更好
+
+> **注意**：舊文件常提到「Edge Runtime」，但 Vercel 官方現在建議改用 Fluid Compute，Edge Functions 有相容性限制，不再是首選。
+
+---
+
+### 3. Vercel Storage（儲存方案）
+
+透過 Vercel Marketplace，可一鍵整合多種儲存服務：
+
+| 服務 | 用途 | 免費額度 |
+|------|------|----------|
+| **Vercel Blob** | 物件儲存（圖片、靜態檔案），支援公開與私有 | 有 |
+| **Upstash Redis** | 高頻存取快取、計數器、API 限流 | 有 |
+| **Neon Postgres** | 全功能關聯式資料庫 | 有 |
+
+---
+
+### 4. Image Optimization（圖片最佳化）
+
+搭配 Next.js 使用時，Vercel 在雲端自動處理圖片：
+
+- 自動壓縮、轉換為 WebP 格式並快取
+- Hobby 方案每月免費提供 **1,000 張**來源圖片最佳化
+- 節省頻寬、提升頁面載入速度
+
+---
+
+### 5. 自動化 CI/CD 與 Vercel CLI
+
+**GitHub 自動部署**
+
+只要將 GitHub 儲存庫授權給 Vercel，每次 `git push` 後 Vercel 會自動：
+
+1. 安裝套件
+2. 打包專案
+3. 發佈到全球節點
+
+**Vercel CLI**
+
+```bash
+# 安裝
+npm install -g vercel
+
+# 本機模擬雲端環境（含 Serverless Functions 與環境變數）
+vercel dev
+
+# 部署到預覽環境
+vercel
+
+# 部署到正式環境
+vercel --prod
+```
 
 ---
 
 ## 安全的環境變數管理
 
-開發具有 AI 功能的應用程式時，往往需要使用 API Key（例如 OpenAI 金鑰）。Vercel 提供了安全的後台設定介面，讓您可以將金鑰儲存在雲端（並自動注入至 Serverless 函式），確保機密資訊不會外洩到前端網頁或 GitHub 程式碼中。
+開發 AI 功能時，API Key（如 OpenAI 金鑰）必須妥善保護。Vercel 提供：
+
+- **後台介面**：在 Vercel Dashboard 安全儲存金鑰
+- **自動注入**：金鑰自動注入至 Serverless Functions，前端無法存取
+- **CLI 指令**：透過 `vercel env pull` 同步到本機 `.env.local`
+
+```bash
+# 查看環境變數
+vercel env ls
+
+# 拉取到本機
+vercel env pull .env.local
+```
 
 ---
 
 ## 如何開始？
 
-您只需要前往 [Vercel 官網](https://vercel.com/)，點擊右上角的「Sign Up」並使用您的 **GitHub 帳號直接登入**，就能立刻開通並使用上述所有免費功能！
+1. 前往 [Vercel 官網](https://vercel.com/)
+2. 點擊右上角「**Sign Up**」
+3. 使用 **GitHub 帳號直接登入**
+4. 匯入 GitHub 儲存庫，即可立刻部署！
+
+---
+
+## 本課程使用到的 Vercel 功能
+
+| 章節 | 功能 |
+|------|------|
+| `05-Serverless-Vercel後端/` | Serverless Functions、Vercel CLI |
+| `07-Next.js/` | Image Optimization、環境變數 |
+| `10-Next.js-Vercel生態系/` | Blob 儲存、Upstash Redis、Fluid Compute |
+| `static-deploy-vercel/` | 靜態網站部署流程 |
